@@ -9,7 +9,11 @@ router.get('/kakao', passport.authenticate('kakao'));
 router.get('/kakao/callback', passport.authenticate('kakao', {
     failureRedirect: '/', // 로그인 실패 시
 }), (req, res) => {
-    res.redirect('/') // 로그인 성공 시
+    const token = req.user;
+    const query = "?accessToken=" + token;
+    res.locals.token = token;
+
+    res.redirect(`/token${query}`); // 로그인 성공 시
 });
 
 
@@ -17,7 +21,8 @@ router.get('/kakao/callback', passport.authenticate('kakao', {
 router.get('/logout', (req, res, next) => {
     req.logout(err => {
         if (err) {
-            return next(err);
+            console.log(err);
+            return res.redirect('/');
         } else {
             req.session.destroy(() => {
                 res.clearCookie('connect.sid');

@@ -1,6 +1,6 @@
 const passport = require('passport');
 const kakaoStrategy = require('passport-kakao').Strategy;
-
+const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 
 module.exports = () => {
@@ -19,16 +19,31 @@ module.exports = () => {
 
             if (exUser) {
                 // 이전에 가입한 유저
-                console.log('이전에 가입한 유저입니다.');
-                done(null, exUser);
+                const token = jwt.sign(
+                    {
+                        name: exUser.name,
+                        email: exUser.email,
+                    },
+                    process.env.JWT_SECRET
+                );
+                console.log('이전에 가입한 유저: ', exUser.name);
+                done(null, token);
             } else {
                 // 새로운 유저
-                console.log('새로운 유저입니다.');
                 const newUser = await User.create({
                     name: profile.displayName,
                     email: profile._json && profile._json.kakao_account.email,
                 });
-                done(null, newUser);
+
+                const token = jwt.sign(
+                    {
+                        name: newUser.name,
+                        email: newUser.email,
+                    },
+                    process.env.JWT_SECRET
+                );
+                console.log('새로운 유저: ', newUser.name);
+                done(null, token);
             }
         } catch (error) {
             console.log(error);
