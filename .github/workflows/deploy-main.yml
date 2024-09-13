@@ -21,7 +21,7 @@ jobs:
           project: sooieese/project-team-web-be11
           stage: main
           yaml: |
-            name: pocket4cut
+             name: pocket4cut
             app: node@20
             options:
               ports: "3000"
@@ -29,11 +29,13 @@ jobs:
               start: npm start
               env:
                 - name: KAKAO_ID
-                  value: 79ba33057b6d1196e5d7ee3368fcaf5e
+                  secret: kakaosecret
                 - name: COOKIE_SECRET
-                  value: P0CKET4CUT123
+                  secret: cookiesecret
                 - name: PORT
                   value: "3000"
+                - name: JWT_SECRET
+                  secret: jwtsecret
               buildenv: []
             context:
               git:
