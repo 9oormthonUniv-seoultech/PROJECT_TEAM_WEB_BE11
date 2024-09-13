@@ -38,6 +38,11 @@ app.get('/', (req, res) => {
   res.send('Hello World!');
 });
 
+// 로그인 인증 토큰 발급용 >> 수정 가능성 o
+app.get('/token', (req, res) => {
+  res.json(req.query);
+})
+
 // 라우트 설정
 const authRouter = require('./routes/auth');
 app.use('/auth', authRouter);
