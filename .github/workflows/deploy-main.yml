@@ -21,7 +21,7 @@ jobs:
           project: sooieese/project-team-web-be11
           stage: main
           yaml: |
-             name: pocket4cut
+            name: pocket4cut
             app: node@20
             options:
               ports: "3000"
