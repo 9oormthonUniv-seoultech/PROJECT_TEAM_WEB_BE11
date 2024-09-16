@@ -1,0 +1,33 @@
+name: Deploy to cloudtype
+on:
+  push:
+    branches:
+      - main
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Connect deploy key
+        uses: cloudtype-github-actions/connect@v1
+        with:
+          token: ${{ secrets.CLOUDTYPE_TOKEN }}
+          ghtoken: ${{ secrets.GHP_TOKEN }}
+      - name: Deploy
+        uses: cloudtype-github-actions/deploy@v1
+        with:
+          token: ${{ secrets.CLOUDTYPE_TOKEN }}
+          project: sooieese/project-team-web-be11
+          stage: main
+          yaml: |
+            name: pocketdb
+            app: mariadb@10.11
+            options:
+              - name: rootpassword
+                secret: dbrootpasswordsecret
+            context:
+              preset: mariadb
+              git:
+                url: git@github.com:${{ github.repository }}.git
+                ref: ${{ github.ref }}

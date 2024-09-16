@@ -29,11 +29,23 @@ jobs:
               start: npm start
               env:
                 - name: KAKAO_ID
-                  value: 79ba33057b6d1196e5d7ee3368fcaf5e
+                  secret: KAKAO_ID
                 - name: COOKIE_SECRET
-                  value: P0CKET4CUT123
+                  secret: COOKIE_SECRET
                 - name: PORT
                   value: "3000"
+                - name: JWT_SECRET
+                  secret: JWT_SECRET
+                - name: DB_HOST
+                  secret: DB_HOST
+                - name: DB_NAME
+                  secret: DB_NAME
+                - name: DB_USER
+                  secret: DB_USER
+                - name: DB_PASSWORD
+                  secret: DB_PASSWORD
+                - name: DB_PORT
+                  secret: DB_PORT
               buildenv: []
             context:
               git:
