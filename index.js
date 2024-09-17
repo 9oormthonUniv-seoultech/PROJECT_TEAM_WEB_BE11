@@ -47,6 +47,9 @@ app.get('/token', (req, res) => {
 const authRouter = require('./routes/auth');
 app.use('/auth', authRouter);
 
+const reviewRouter = require('./routes/reviewRoutes');
+app.use('/api/review', reviewRouter);
+
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
