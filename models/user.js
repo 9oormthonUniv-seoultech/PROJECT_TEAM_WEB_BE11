@@ -18,6 +18,11 @@ class User extends Sequelize.Model {
                     unique: true,
                     comment: '이메일',
                 },
+                profileImage: {
+                    type: Sequelize.STRING(255),
+                    allowNull: true,
+                    comment: '프로필 사진',
+                },
             },
             {
                 modelName: 'User',  // 모델 이름
@@ -34,7 +39,15 @@ class User extends Sequelize.Model {
 
     // 다른 모델과의 관계 정의
     static associate(db) {
-
+        
+        // 다대다 관계
+        this.belongsToMany(db.Photobooth, {
+            through: 'Photobooth_like',
+            foreignKey: 'user_id',
+            otherKey: 'photobooth_id',
+            as: 'likedBooths',
+            timestamps: false,
+        });
     }
 };
 

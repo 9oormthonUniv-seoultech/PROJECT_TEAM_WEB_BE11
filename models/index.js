@@ -17,14 +17,16 @@ db.Sequelize = Sequelize;
 
 db.User = User;
 User.init(sequelize);
-User.associate(db);
 
 db.Photobooth = Photobooth;  
 Photobooth.init(sequelize);
-Photobooth.associate(db);
 
 db.Review = Review;
 Review.init(sequelize);
+
+// 관계 설정
+User.associate(db);
+Photobooth.associate(db);
 Review.associate(db);
 
 module.exports = db;
