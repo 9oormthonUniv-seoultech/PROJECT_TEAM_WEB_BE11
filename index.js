@@ -50,6 +50,9 @@ app.use('/auth', authRouter);
 const reviewRouter = require('./routes/reviewRoutes');
 app.use('/api/review', reviewRouter);
 
+const userRouter = require('./routes/userRoutes');
+app.use('/api/user', userRouter);
+
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });

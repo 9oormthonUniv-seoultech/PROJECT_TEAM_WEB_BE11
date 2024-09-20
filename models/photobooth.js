@@ -49,6 +49,14 @@ class Photobooth extends Sequelize.Model {
     // 다른 모델과의 관계 정의
     static associate(db) {
 
+        // 다대다 관계
+        this.belongsToMany(db.User, {
+            through: 'Photobooth_like',
+            foreignKey: 'photobooth_id',
+            otherKey: 'user_id',
+            as: 'likedByUsers',
+            timestamps: false,
+        })
     }
 };
 
