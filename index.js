@@ -53,6 +53,16 @@ app.use('/api/review', reviewRouter);
 const userRouter = require('./routes/userRoutes');
 app.use('/api/user', userRouter);
 
+
+// 스웨거 세팅
+const swaggerUi = require('swagger-ui-express');
+const YAML = require('yamljs');
+const path = require('path');
+const swaggerSpec = YAML.load(path.join(__dirname, './build/swagger.yaml'));
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+
+
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
