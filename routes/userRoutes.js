@@ -6,9 +6,9 @@ const { getUserById, updateUser, deleteUser } = require('../controllers/userCont
 router.get('/:user_id', getUserById);
 
 // 회원정보 수정 라우터
-router.post('/update/:user_id', updateUser);
+router.post('/:user_id', updateUser);
 
 // 회원 탈퇴 라우터
-router.get('/delete/:user_id', deleteUser);
+router.delete('/:user_id', deleteUser);
 
 module.exports = router;

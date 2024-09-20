@@ -1,0 +1,142 @@
+get:
+  summary: Get user by ID
+  description: 유저 ID를 통해 유저 정보를 조회합니다.
+  parameters:
+    - in: path
+      name: user_id
+      required: true
+      schema:
+        type: integer
+      description: 조회할 유저의 ID
+  responses:
+    '200':
+      description: 유저 정보 조회 성공
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              id:
+                type: integer
+              name:
+                type: string
+              email:
+                type: string
+              profileImage:
+                type: string
+    '404':
+      description: 유저를 찾을 수 없음
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "유저를 찾을 수 없습니다."
+    '500':
+      description: 서버 오류로 인한 유저 조회 실패
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "유저 조회 실패"
+
+
+post:
+  summary: Update user information
+  description: 유저 정보를 수정합니다.
+  parameters:
+    - in: path
+      name: user_id
+      required: true
+      schema:
+        type: integer
+      description: 수정할 유저의 ID
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            name:
+              type: string
+            email:
+              type: string
+            profileImage:
+              type: string
+  responses:
+    '200':
+      description: 유저 정보 업데이트 성공
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              id:
+                type: integer
+              name:
+                type: string
+              email:
+                type: string
+              profileImage:
+                type: string
+    '404':
+      description: 유저를 찾을 수 없음
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "유저를 찾을 수 없습니다."
+    '500':
+      description: 서버 오류로 인한 유저 수정 실패
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "유저 업데이트 실패"
+
+
+delete:
+  summary: Delete user
+  description: 회원 탈퇴
+  parameters:
+    - in: path
+      name: user_id
+      required: true
+      schema:
+        type: integer
+      description: 삭제할 유저의 ID
+  responses:
+    '204':
+      description: 유저 탈퇴 성공
+    '404':
+      description: 유저를 찾을 수 없습니다.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "유저를 찾을 수 없습니다."
+    '500':
+      description: 서버 오류로 인한 유저 삭제 실패
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "유저 삭제 실패"

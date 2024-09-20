@@ -1,0 +1,35 @@
+post:
+  summary: Create a new review
+  description: 포토부스에 대한 리뷰를 작성합니다.
+  parameters:
+    - in: path
+      name: user_id
+      required: true
+      schema:
+        type: integer
+      description: 작성자의 ID
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            booth_keyword:
+              type: array
+              items:
+                type: string
+              example: ["넓은 부스 공간", "청결한 부스"]
+            photo_keyword:
+              type: array
+              items:
+                type: string
+              example: ["빛번짐 없음", "선명한 화질"]
+            image_url:
+              type: array
+              items:
+                type: string
+              example: ["https://example.com/image1.jpg", "https://example.com/image2.jpg"]
+  responses:
+    '201':
+      description: 리뷰 작성 성공
