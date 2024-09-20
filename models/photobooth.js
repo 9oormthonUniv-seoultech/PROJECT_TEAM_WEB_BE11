@@ -22,7 +22,7 @@ class Photobooth extends Sequelize.Model {
                     comment: '포토부스 경도',
                 },
                 brand: {
-                    type: Sequelize.ENUM('하루필름', '인생네컷', '셀픽스', '포토이즘', '포토그레이', '비룸', '포토메틱', '포토시그니처', '인생사진', '포토이즘박스'),
+                    type: Sequelize.ENUM('하루필름', '인생네컷', '셀픽스', '포토이즘컬러드', '포토그레이', '비룸', '포토매틱', '포토시그니처', '포토이즘박스'),
                     allowNull: false,
                     comment: '브랜드',
                 },
