@@ -3,6 +3,7 @@ const multer = require('multer');
 const multerS3 = require('multer-s3');
 const uuid = require('uuid4');
 const path = require('path');
+const axios = require('axios');
 
 // AWS S3 설정
 AWS.config.update({
@@ -37,6 +38,48 @@ const uploadImage = multer({
 }).array('files', 5); //파일 최대 5개까지 받음
 
 
+async function uploadProfileImage(imageUrl){
+    try {
+        // 이미지 다운로드
+        const response = await axios.get(imageUrl, { responseType: 'arraybuffer' });
+
+        // MIME 타입으로부터 파일 확장자 결정
+        const mimeType = response.headers['content-type'];
+        let extension = '';
+
+        if (mimeType === 'image/jpeg') {
+            extension = '.jpg';
+        } else if (mimeType === 'image/png') {
+            extension = '.png';
+        } else if (mimeType === 'image/bmp') {
+            extension = '.bmp';
+        } else {
+            throw new Error('허용된 파일 형식이 아닙니다');
+        }
+
+        // S3에 업로드
+        const fileName = `${uuid()}${extension}`;
+
+        const params = {
+            Bucket: process.env.S3_BUCKET_NAME,
+            Key: fileName,
+            Body: response.data,
+            ContentType: response.headers['content-type'],
+        };
+
+        await s3.putObject(params).promise();
+
+        // 업로드된 파일의 S3 URL 반환
+        const s3Url = `https://${params.Bucket}.s3.ap-northeast-2.amazonaws.com/${params.Key}`;
+        return s3Url;
+
+    } catch (error) {
+        console.error('이미지 업로드 중 에러 발생:', error);
+        throw error;
+    }
+
+} ;
+
 const deleteImage = (fileKey) => {
     s3.deleteObject(
         {
@@ -52,4 +95,4 @@ const deleteImage = (fileKey) => {
         }
     )
 }
-module.exports = {uploadImage, deleteImage}
+module.exports = {uploadImage, uploadProfileImage, deleteImage}
