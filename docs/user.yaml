@@ -126,16 +126,6 @@ post:
               message:
                 type: string
                 example: "기존 이미지 삭제 실패"
-    '503':
-      description: 프로필 사진 업로드 실패
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              message:
-                type: string
-                example: "파일 업로드 중 에러"
 
 delete:
   summary: Delete user

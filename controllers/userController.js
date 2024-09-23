@@ -20,10 +20,9 @@ const getUserById = async (req, res) => {
 const updateUser = async (req, res) => {
     try {
         const user_id = req.params.user_id;
-        const { name, email, isProfileImageChanged } = req.body;
+        const { name, email } = req.body;
+        const isProfileImageChanged = req.body.isProfileImageChanged === 'true';
 
-        console.log(req.body.name, req.body.email, req.body.isProfileImageChanged);
-        console.log(req.files);  
         const user = await User.findByPk(user_id);
         
         if (!user) {
@@ -41,7 +40,9 @@ const updateUser = async (req, res) => {
                     return res.status(502).json({ message: '기존 이미지 삭제 실패', error: deleteError.message });
                 }
             }
-            profileImage = req.files[0].location;
+            profileImage = req.files[0].location; //새 이미지로 업데이트
+        }else{
+            profileImage = null; // 사용자가 프로필 이미지를 삭제했을 때
         }
 
         user.name = name;
