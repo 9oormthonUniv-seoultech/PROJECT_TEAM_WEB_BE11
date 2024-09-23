@@ -21,9 +21,7 @@ const updateUser = async (req, res) => {
     try {
         const user_id = req.params.user_id;
         const { name, email } = req.body;
-        const isProfileImageChanged = req.body.isProfileImageChanged === 'true';
-
-        const user = await User.findByPk(user_id);
+                const user = await User.findByPk(user_id);
         
         if (!user) {
             return res.status(404).json({ message: '유저를 찾을 수 없습니다.' });
@@ -31,7 +29,7 @@ const updateUser = async (req, res) => {
         
         //프로필 이미지 처리
         let profileImage = user.profileImage;
-        if (isProfileImageChanged && req.files.length>0) {
+        if (req.files.length>0) {
             if (user.profileImage) {//기존 프로필 이미지가 있으면 s3에서 삭제
                 const fileKey = user.profileImage.split('/').pop();
                 try {

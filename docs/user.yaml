@@ -67,9 +67,6 @@ post:
               type: string
             email:
               type: string
-            isProfileImageChanged:
-              type: boolean
-              description : 프론트에서 프로필이미지 변경을 감지하여 변경되었으면 true값 넣어주세요
             profileImage:
               type: string
               format: binary
