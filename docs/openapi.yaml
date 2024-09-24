@@ -11,3 +11,7 @@ paths:
     $ref: './user.yaml'
   /api/review/{user_id}:
     $ref: './review.yaml'
+  /api/map:
+    $ref: './map.yaml'
+  /api/map/search:
+    $ref: './map-search.yaml'

@@ -53,6 +53,8 @@ app.use('/api/review', reviewRouter);
 const userRouter = require('./routes/userRoutes');
 app.use('/api/user', userRouter);
 
+const mapRouter = require('./routes/mapRouters');
+app.use('/api/map', mapRouter);
 
 // 스웨거 세팅
 const swaggerUi = require('swagger-ui-express');
