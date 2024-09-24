@@ -1,4 +1,5 @@
 const User = require('../models/user');
+const { deleteImage} = require('../services/s3Service'); 
 
 // id로 유저 조회 (Json으로 결과 반환)
 const getUserById = async (req, res) => {
@@ -19,11 +20,29 @@ const getUserById = async (req, res) => {
 const updateUser = async (req, res) => {
     try {
         const user_id = req.params.user_id;
-        const { name, email, profileImage } = req.body;
-        const user = await User.findByPk(user_id);
+        const { name, email } = req.body;
+                const user = await User.findByPk(user_id);
+        
         if (!user) {
             return res.status(404).json({ message: '유저를 찾을 수 없습니다.' });
         }
+        
+        //프로필 이미지 처리
+        let profileImage = user.profileImage;
+        if (req.files.length>0) {
+            if (user.profileImage) {//기존 프로필 이미지가 있으면 s3에서 삭제
+                const fileKey = user.profileImage.split('/').pop();
+                try {
+                    await deleteImage(fileKey);
+                } catch (deleteError) {
+                    return res.status(502).json({ message: '기존 이미지 삭제 실패', error: deleteError.message });
+                }
+            }
+            profileImage = req.files[0].location; //새 이미지로 업데이트
+        }else{
+            profileImage = null; // 사용자가 프로필 이미지를 삭제했을 때
+        }
+
         user.name = name;
         user.email = email;
         user.profileImage = profileImage;
