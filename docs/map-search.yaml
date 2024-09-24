@@ -1,0 +1,61 @@
+get:
+  summary: Search photobooths based on a location keyword
+  description: 검색어 키워드의 위치를 기반으로 반경 1km 내의 포토부스 정보를 조회합니다.
+  parameters:
+    - in: query
+      name: searchTerm
+      schema:
+        type: string
+        example: '명동역'
+      description: 검색할 장소의 키워드 (구, 역, 건물명)
+  responses:
+    '200':
+      description: 검색어 키워드 인근의 포토부스 조회 성공
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              place_name:
+                type: string
+                description: 검색어를 기반으로 표시된 지도의 중심 (검색어가 부정확한 경우 해당 키워드와 가장 가까운 장소로 선정)
+                example: '명동역 4호선'
+              photobooths:
+                type: array
+                description: 키워드 장소 반경 1km 내의 포토부스들
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 52
+                    name:
+                      type: string
+                      example: '포토이즘 박스 을지로 2호점'
+                    latitude:
+                      type: number
+                      format: float
+                      example: 37.566
+                    longitude:
+                      type: number
+                      format: float
+                      example: 126.991
+                    brand:
+                      type: string
+                      example: '포토이즘박스'
+                    rating:
+                      type: number
+                      format: float
+                      example: 0
+    '400':
+      description: 검색 실패 (검색어가 존재하지 않음)
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: '검색어를 입력하세요.'
+    '500':
+      description: Internal server error.
