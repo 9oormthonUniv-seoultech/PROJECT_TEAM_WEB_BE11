@@ -46,6 +46,12 @@ jobs:
                   secret: DB_PASSWORD
                 - name: DB_PORT
                   secret: DB_PORT
+                - name: S3_ACCESS_KEY_ID
+                  secret: S3_ACCESS_KEY_ID
+                - name: S3_SECRET_ACCESS_KEY
+                  secret: S3_SECRET_ACCESS_KEY
+                - name: S3_BUCKET_NAME
+                  secret: S3_BUCKET_NAME
               buildenv: []
             context:
               git:
