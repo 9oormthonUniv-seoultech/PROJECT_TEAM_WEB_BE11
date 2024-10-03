@@ -1,35 +1,88 @@
-post:
-  summary: Create a new review
-  description: 포토부스에 대한 리뷰를 작성합니다.
+delete:
+    tags:
+      - Review
+    summary: Delete a review
+    description: 특정 리뷰를 삭제합니다.
+    parameters:
+      - in: path
+        name: review_id
+        required: true
+        schema:
+          type: integer
+        description: 삭제할 리뷰의 ID
+    responses:
+      '200':
+        description: 리뷰 삭제 성공
+      '404':
+        description: 리뷰를 찾을 수 없습니다.
+      '500':
+        description: 리뷰 삭제에 실패했습니다.
+
+get:
+  tags:
+    - Review
+  summary: Get review details
+  description: 특정 리뷰의 상세 정보를 조회합니다.
   parameters:
     - in: path
-      name: user_id
+      name: review_id
       required: true
       schema:
         type: integer
-      description: 작성자의 ID
-  requestBody:
-    required: true
-    content:
-      application/json:
-        schema:
-          type: object
-          properties:
-            booth_keyword:
-              type: array
-              items:
-                type: string
-              example: ["넓은 부스 공간", "청결한 부스"]
-            photo_keyword:
-              type: array
-              items:
-                type: string
-              example: ["빛번짐 없음", "선명한 화질"]
-            image_url:
-              type: array
-              items:
-                type: string
-              example: ["https://example.com/image1.jpg", "https://example.com/image2.jpg"]
+      description: 조회할 리뷰의 ID
   responses:
-    '201':
-      description: 리뷰 작성 성공
+    '200':
+      description: 리뷰 상세정보 조회 성공
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              id:
+                type: integer
+                description: 리뷰 ID
+              user_id:
+                type: integer
+                description: 작성자 ID
+              photobooth_id:
+                type: integer
+                description: 포토부스 ID
+              rating:
+                type: integer
+                description: 평점
+              booth_keyword:
+                type: array
+                items:
+                  type: string
+                description: 포토부스 관련 키워드
+              photo_keyword:
+                type: array
+                items:
+                  type: string
+                description: 사진 관련 키워드
+              content:
+                type: string
+                description: 리뷰 내용
+              image_url:
+                type: string
+                description: 이미지 URL
+              date:
+                type: string
+                format: date-time
+                description: 리뷰 작성 날짜
+              Photobooth:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    description: 포토부스 이름
+                  brand:
+                    type: string
+                    description: 포토부스 브랜드
+                  rating:
+                    type: number
+                    description: 포토부스 평균 평점
+    '404':
+      description: 리뷰를 찾을 수 없습니다.
+    '500':
+      description: 리뷰를 조회하는 중 오류가 발생했습니다.
