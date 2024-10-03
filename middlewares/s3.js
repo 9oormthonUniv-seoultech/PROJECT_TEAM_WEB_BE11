@@ -79,7 +79,6 @@ const saveUploadOneImage = async (req, res, next) => {
         await s3.putObject(params).promise();
 
         return `https://${params.Bucket}.s3.ap-northeast-2.amazonaws.com/${params.Key}`; 
-        next(); 
     } catch (error) {
         console.error('이미지 업로드 중 에러 발생:', error);
         return res.status(500).json({ message: '이미지 업로드 중 에러 발생', error: error.message });
