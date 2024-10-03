@@ -1,0 +1,53 @@
+get:
+  tags:
+    - Review
+  summary: Get recent reviews for a user
+  description: 마이페이지에서 사용자의 최근 리뷰 2개를 가져옵니다.
+  parameters:
+    - in: path
+      name: user_id
+      required: true
+      schema:
+        type: integer
+      description: 사용자의 ID
+  responses:
+    '200':
+      description: 리뷰 가져오기 성공
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              reviewNum:
+                type: integer
+                description: 전체 리뷰 수
+                example: 3
+              recent_reviews:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    review_id:
+                      type: integer
+                      description: 리뷰 ID
+                      example: 1
+                    date:
+                      type: string
+                      format: date-time
+                      description: 리뷰 작성 날짜
+                      example: "2024-10-03"
+                    photobooth_name:
+                      type: string
+                      description: 포토부스 이름
+                      example: "포토이즘박스 공릉점"
+                    rating:
+                      type: integer
+                      description: 사용자가 매긴 평점
+                      example: 5
+                    image:
+                      type: string
+                      description: 이미지 URL
+                      example: "https://example.com/image.jpg"
+                nullable: true
+    '500':
+      description: 리뷰를 가져오는 중 오류가 발생했습니다.

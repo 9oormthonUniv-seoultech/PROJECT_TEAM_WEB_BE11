@@ -1,0 +1,63 @@
+post:
+  tags:
+    - Review
+  summary: Create a new review
+  description: 포토부스에 대한 리뷰를 작성합니다.
+  parameters:
+    - in: path
+      name: user_id
+      required: true
+      schema:
+        type: integer
+      description: 작성자의 ID
+  requestBody:
+    required: true
+    content:
+      multipart/form-data:
+        schema:
+          type: object
+          properties:
+            photobooth_name:
+              type: string
+              description: 포토부스 이름
+              example: "포토이즘박스 서울 숭실대점"
+            rating:
+              type: integer
+              description: 평점
+              example: 4
+            booth_keyword:
+              type: array
+              items:
+                type: string
+              description: 포토부스 관련 키워드(사용자 선택값, 띄어쓰기없이)
+              example: 
+                - "넓은부스공간"
+                - "청결한부스"
+            photo_keyword:
+              type: array
+              items:
+                type: string
+              description: 사진 관련 키워드(사용자 선택값, 띄어쓰기없이)
+              example: 
+                - "빛번짐없음"
+                - "선명한화질"
+            content:
+              type: string
+              description: 리뷰 내용
+              example: "청결하고 넓어요. 사진이 예쁘게 나옵니다"
+            date:
+              type: string
+              format: date
+              description: 리뷰작성 날짜
+              example: "2023-09-25"
+            files:
+              type: array
+              description: 이미지가 없으면 null값
+              items:
+                type: string
+              example:
+                - "https://example.com/image1.jpg"
+                - "https://example.com/image2.jpg"
+responses:
+  '201':
+    description: 리뷰 작성 성공

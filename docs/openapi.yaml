@@ -4,12 +4,16 @@ info:
   description: pocket4cut web1팀의 API 문서입니다
   version: 0.1.9
 servers:
-  - url: https://port-0-pocket4cut-m0vc6i8ed9c19e71.sel4.cloudtype.app/
+  - url: https://localhost:3000
     description: pocket4cut
 paths:
   /api/user/{user_id}:
     $ref: './user.yaml'
-  /api/review/{user_id}:
+  /api/review/user/{user_id}:
+    $ref: './review-user.yaml'
+  /api/review/mypage/{user_id}:
+    $ref: './review-mypage.yaml'
+  /api/review/{review_id}:
     $ref: './review.yaml'
   /api/map:
     $ref: './map.yaml'
