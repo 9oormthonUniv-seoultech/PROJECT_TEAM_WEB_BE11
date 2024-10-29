@@ -32,7 +32,17 @@ class Photobooth extends Sequelize.Model {
                     defaultValue : 0,
                     comment: '평균 평점',
                 },
-            },
+                top_booth_keywords: {
+                    type: Sequelize.JSON,
+                    allowNull: true,
+                    comment: '가장 많이 등장하는 부스 키워드와 개수',
+                },
+                top_photo_keywords: {
+                    type: Sequelize.JSON,
+                    allowNull: true,
+                    comment: '가장 많이 등장하는 사진 키워드와 개수',
+                },
+                },
             {
                 modelName: 'Photobooth', 
                 tableName: 'photobooth', 
