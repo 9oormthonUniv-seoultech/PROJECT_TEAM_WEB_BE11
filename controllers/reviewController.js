@@ -1,7 +1,7 @@
 const Review = require('../models/review');
 const Photobooth = require('../models/photobooth');
 const { deleteImages} = require('../middlewares/s3');
-const { updatePhotobooth} = require('../middlewares/updatePhotobooth');
+const {updateRating, updateKeywords } = require('../middlewares/reviewUpdate');
 
 // 리뷰 작성
 const createReview = async (req, res) => {
@@ -20,21 +20,29 @@ const createReview = async (req, res) => {
   
       const photobooth_id = photobooth.id;
       req.body.photobooth_id = photobooth_id;
+      req.body.increment = 1;
+
+      // booth_keyword와 photo_keyword가 단일 값일 경우 배열로 변환
+      const boothKeywords = Array.isArray(booth_keyword) ? booth_keyword : [booth_keyword];
+      const photoKeywords = Array.isArray(photo_keyword) ? photo_keyword : [photo_keyword];
+
 
     // 리뷰 생성
     const newReview = await Review.create({
       user_id,
       photobooth_id,
       rating,
-      booth_keyword,
-      photo_keyword,
+      booth_keyword: boothKeywords, 
+      photo_keyword: photoKeywords, 
       content,
       image_url: imageUrls && imageUrls.length > 0 ? imageUrls : null,  // S3에서 반환된 URL 저장
       date: date,
     });
 
-    await updatePhotobooth(req, res, () => {
-      res.status(201).json(newReview);
+    await updateKeywords(req, res, async () => {
+      await updateRating(req, res, () => {
+        res.status(201).json(newReview);
+      });
     });
   } catch (error) {
     console.error('리뷰 생성 중 오류:', error);
@@ -67,16 +75,24 @@ const deleteReview = async (req, res) => {
 
       if (deletedReview) {
         req.body.photobooth_id = review.photobooth_id;
-        await updatePhotobooth(req, res, () => {
-          res.status(200).json({ message: '리뷰가 삭제되었습니다.' });
-      });
+        req.body.booth_keyword = typeof review.booth_keyword === 'string' ? JSON.parse(review.booth_keyword) : review.booth_keyword;
+        req.body.photo_keyword = typeof review.photo_keyword === 'string' ? JSON.parse(review.photo_keyword) : review.photo_keyword;
+        req.body.increment = -1;
+       
+        await updateKeywords(req, res, async () => {
+          await updateRating(req, res, () => {
+            res.status(200).json({ message: '리뷰가 삭제되었습니다.' });
+          });
+        });
       } else {
           res.status(404).json({ message: '리뷰를 찾을 수 없습니다.' });
       }
   } catch (error) {
+      console.error('리뷰 삭제 중 오류:', error);
       res.status(500).json({ message: '리뷰 삭제에 실패했습니다.' });
   }
 };
+
 
 //리뷰 상세정보 가져오기
 const getReviewDetail = async (req, res) => {
@@ -102,40 +118,41 @@ const getReviewDetail = async (req, res) => {
 };
 
 
-//마이페이지 더보기 전 리뷰 2개 최신순 가져오기
-const getMypageReview = async(req, res) =>{
+// 마이페이지 리뷰 가져오기 (limit 옵션으로 제한된 개수 또는 전체)
+const getMypageReview = async (req, res) => {
   try {
     const user_id = req.params.user_id;
+    const limit = req.query.limit ? parseInt(req.query.limit) : null; 
 
     const reviews = await Review.findAll({
       where: { user_id: user_id },
-      order: [['date', 'DESC']],  
-      limit: 2,  
+      order: [['date', 'DESC']],
+      limit: limit, 
       include: [
         {
           model: Photobooth,
-          attributes: ['name'], 
-        }
-      ]
+          attributes: ['name'],
+        },
+      ],
     });
 
     // 리뷰가 없을 경우
     if (reviews.length === 0) {
       return res.status(200).json({
-          reviewNum: 0,
-          recent_reviews: null,
+        reviewNum: 0,
+        recent_reviews: null,
       });
-  }
+    }
 
-    const review = reviews.map(review => ({
-      review_id:review.id,
+    const review = reviews.map((review) => ({
+      review_id: review.id,
       date: review.date,
-      photobooth_name: review.Photobooth.name,  
+      photobooth_name: review.Photobooth.name,
       rating: review.rating,
-      image: review.image_url ? JSON.parse(review.image_url)[0] : null
+      image: review.image_url ? JSON.parse(review.image_url)[0] : null,
     }));
 
-    const reviewNum = await Review.count({ where: { user_id: user_id } });
+    const reviewNum = limit ? await Review.count({ where: { user_id: user_id } }) : reviews.length;
 
     res.status(200).json({
       reviewNum: reviewNum,
@@ -145,7 +162,7 @@ const getMypageReview = async(req, res) =>{
     console.error(error);
     res.status(500).json({ error });
   }
+};
 
-}
 
-module.exports = { createReview, deleteReview, getReviewDetail, getMypageReview };
+module.exports = { createReview, deleteReview, getReviewDetail, getMypageReview};

@@ -2,7 +2,7 @@ get:
   tags:
     - Review
   summary: Get recent reviews for a user
-  description: 마이페이지에서 사용자의 최근 리뷰 2개를 가져옵니다.
+  description: 마이페이지에서 사용자의 최근 리뷰를 가져옵니다. limit 파라미터를 통해 가져올 리뷰의 개수 제한 가능(더보기 이전 2개)
   parameters:
     - in: path
       name: user_id
@@ -10,6 +10,12 @@ get:
       schema:
         type: integer
       description: 사용자의 ID
+    - in: query
+      name: limit
+      required: false
+      schema:
+        type: integer
+      description: 가져올 리뷰의 개수 제한. 기본값은 전체 리뷰입니다.
   responses:
     '200':
       description: 리뷰 가져오기 성공
@@ -35,7 +41,7 @@ get:
                       type: string
                       format: date-time
                       description: 리뷰 작성 날짜
-                      example: "2024-10-03"
+                      example: "2024-10-03T10:00:00Z"
                     photobooth_name:
                       type: string
                       description: 포토부스 이름

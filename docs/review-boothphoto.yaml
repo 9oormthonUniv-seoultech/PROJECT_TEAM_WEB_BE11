@@ -1,0 +1,58 @@
+get:
+  tags:
+    - Review
+  summary: Get photobooth rating and review photos
+  description: 해당 포토부스의 평점과 각 리뷰의 첫 번째 사진, 전체 사진 개수를 가져옴
+  parameters:
+    - in: path
+      name: photobooth_id
+      required: true
+      schema:
+        type: integer
+      description: 포토부스의 ID
+  responses:
+    '200':
+      description: 데이터 가져오기 성공
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              rating:
+                type: number
+                format: float
+                description: 포토부스의 평균 평점
+                example: 4.3
+              reviewPhotos:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    Image:
+                      type: string
+                      description: 각 리뷰의 첫 번째 이미지 URL
+                      example: "https://amazonaws.com/pocket-imagetest2.jpg"
+              totalImageCount:
+                type: integer
+                description: 해당 포토부스의 모든 리뷰 사진 총 개수
+                example: 4
+    '404':
+      description: 포토부스를 찾을 수 없습니다.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "해당 부스를 찾을 수 없습니다."
+    '500':
+      description: 데이터 조회에 실패했습니다.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "데이터 조회에 실패했습니다."

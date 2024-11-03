@@ -4,6 +4,7 @@ const Sequelize = require('sequelize');
 const User = require('./user');
 const Photobooth = require('./photobooth');
 const Review = require('./review');
+const {Keyword, Keyword_list} = require('./keyword');
 
 const env = process.env.NODE_ENV || 'development';
 const config = require('../configs/config')[env];
@@ -24,9 +25,16 @@ Photobooth.init(sequelize);
 db.Review = Review;
 Review.init(sequelize);
 
+db.Keyword_list = Keyword_list;
+Keyword_list.init(sequelize);
+db.Keyword = Keyword;
+Keyword.init(sequelize);
+
 // 관계 설정
 User.associate(db);
 Photobooth.associate(db);
 Review.associate(db);
+Keyword.associate(db);
+Keyword_list.associate(db); 
 
 module.exports = db;
