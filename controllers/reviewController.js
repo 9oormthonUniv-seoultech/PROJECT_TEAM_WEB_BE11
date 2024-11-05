@@ -121,8 +121,12 @@ const getReviewDetail = async (req, res) => {
 // 마이페이지 리뷰 가져오기 (limit 옵션으로 제한된 개수 또는 전체)
 const getMypageReview = async (req, res) => {
   try {
+    console.log("getMypageReview called");
+
     const user_id = req.params.user_id;
     const limit = req.query.limit ? parseInt(req.query.limit) : null; 
+
+    console.log("user_id:", user_id);
 
     const reviews = await Review.findAll({
       where: { user_id: user_id },
@@ -135,6 +139,8 @@ const getMypageReview = async (req, res) => {
         },
       ],
     });
+
+    console.log("reviews retrieved:", reviews);
 
     // 리뷰가 없을 경우
     if (reviews.length === 0) {
