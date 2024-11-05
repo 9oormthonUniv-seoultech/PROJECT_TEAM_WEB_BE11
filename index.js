@@ -59,6 +59,9 @@ app.use('/api/map', mapRouter);
 const photoRouter = require('./routes/photoRouter');
 app.use('/api/photo', photoRouter);
 
+const boothLikeRouter = require('./routes/boothLikeRouter');
+app.use('/api/booth', boothLikeRouter);
+
 // 스웨거 세팅
 const swaggerUi = require('swagger-ui-express');
 const YAML = require('yamljs');
