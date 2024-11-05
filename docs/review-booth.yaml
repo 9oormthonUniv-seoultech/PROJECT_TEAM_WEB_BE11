@@ -1,0 +1,126 @@
+get:
+  tags:
+    - Review
+  summary: Get reviews for a photobooth
+  description: 해당 포토부스의 최신 리뷰 10개, 키워드 통계 가져옴
+  parameters:
+    - in: path
+      name: photobooth_id
+      required: true
+      schema:
+        type: integer
+      description: 포토부스의 ID
+  responses:
+    '200':
+      description: 리뷰 가져오기 성공
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              reviews:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    review_id:
+                      type: integer
+                      description: 리뷰 ID
+                      example: 1
+                    date:
+                      type: string
+                      format: date-time
+                      description: 리뷰 작성 날짜
+                      example: "2024-10-03T10:00:00Z"
+                    photobooth_name:
+                      type: string
+                      description: 포토부스 이름
+                      example: "포토이즘박스 공릉점"
+                    rating:
+                      type: integer
+                      description: 사용자가 매긴 평점
+                      example: 5
+                    user:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                          description: 사용자 이름
+                          example: "홍길동"
+                        profileImage:
+                          type: string
+                          description: 사용자 프로필 이미지 URL
+                          example: "https://pocket-bucket.s3.ap-northeast-2.amazonaws.com/defaultProfileImage.jpg"
+                    booth_keyword:
+                      type: object
+                      properties:
+                        keyword:
+                          type: string
+                          description: 부스 키워드
+                          example: "깔끔한소품"
+                        count:
+                          type: integer
+                          description: 해당 리뷰에서 사용자가 등록한 부스 키워드 개수
+                          example: 12
+                      nullable: true
+                    photo_keyword:
+                      type: object
+                      properties:
+                        keyword:
+                          type: string
+                          description: 촬영 스타일 키워드
+                          example: "선명한화질"
+                        count:
+                          type: integer
+                          description: 해당 리뷰에서 사용자가 등록한 촬영스타일 키워드 개수
+                          example: 8
+                      nullable: true
+                    content:
+                      type: string
+                      description: 리뷰 내용
+                      example: "부스가 깔끔하고 친절했어요."
+                    image:
+                      type: string
+                      description: 첫 번째 이미지 URL
+                      example: "https://example.com/image1.jpg"
+                      nullable: true
+                    imageCount:
+                      type: integer
+                      description: 리뷰에 첨부된 이미지 수
+                      example: 3
+              photoKeywordsTotalCount:
+                type: integer
+                description: 촬영 스타일 키워드 총 카운트 (모든 관련 키워드의 총 카운트 합계)
+                example: 20
+              boothKeywordsTotalCount:
+                type: integer
+                description: 부스 키워드 총 카운트 (모든 관련 키워드의 총 카운트 합계)
+                example: 15
+              photoKeywords:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    keyword:
+                      type: string
+                      description: 촬영 스타일 키워드 전체
+                      example: "자연스러운보정"
+                    count:
+                      type: integer
+                      description: 포토부스에서 해당 촬영스타일키워드가 전체 몇 번 등록되었는지
+                      example: 8
+              boothKeywords:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    keyword:
+                      type: string
+                      description: 부스 키워드 전체
+                      example: "좋은파우더룸"
+                    count:
+                      type: integer
+                      description: 포토부스에서 해당 부스키워드가 전체 몇 번 등록되었는지
+                      example: 10
+    '500':
+      description: 리뷰를 가져오는 중 오류가 발생했습니다.
