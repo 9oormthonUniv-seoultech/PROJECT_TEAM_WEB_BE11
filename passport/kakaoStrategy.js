@@ -22,6 +22,7 @@ module.exports = () => {
                 // 이전에 가입한 유저
                 const token = jwt.sign(
                     {
+                        id: exUser.id,
                         name: exUser.name,
                         email: exUser.email,
                     },
@@ -43,6 +44,7 @@ module.exports = () => {
 
                 const token = jwt.sign(
                     {
+                        id: newUser.id,
                         name: newUser.name,
                         email: newUser.email,
                     },

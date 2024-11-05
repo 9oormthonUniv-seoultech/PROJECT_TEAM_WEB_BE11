@@ -13,9 +13,9 @@ module.exports = () => {
 
     passport.deserializeUser((token, done) => {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        const userEmail = decoded.email;
+        const user_id = decoded.id;
 
-        User.findOne({ where: { email: userEmail} })
+        User.findByPk(user_id)
             .then(user => done(null, user))
             .catch(err => done(err));
     });
