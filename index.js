@@ -48,6 +48,7 @@ const authRouter = require('./routes/auth');
 app.use('/auth', authRouter);
 
 const reviewRouter = require('./routes/reviewRoutes');
+console.log("reviewRoutes loaded 1");
 app.use('/api/review', reviewRouter);
 
 const userRouter = require('./routes/userRoutes');

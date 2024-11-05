@@ -5,6 +5,14 @@ const { createReview, deleteReview, getReviewDetail, getMypageReview} = require(
 const {getBoothReviews} = require('../controllers/boothReviewController');
 const {getBoothPhotos} = require('../controllers/boothPhotoController');
 
+console.log("reviewRoutes loaded 2");
+
+router.get('/test', (req, res) => {
+    console.log("Test route accessed");
+    res.send("Test route works");
+  });
+  
+
 // 리뷰 작성 라우트
 router.post('/user/:user_id',  uploadFiveImages, createReview);
 
