@@ -2,7 +2,7 @@ const passport = require('passport');
 const kakaoStrategy = require('passport-kakao').Strategy;
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
-const { uploadProfileImage} = require('../services/s3Service'); 
+const { saveUploadOneImage} = require('../middlewares/s3'); 
 
 module.exports = () => {
 
@@ -22,6 +22,7 @@ module.exports = () => {
                 // 이전에 가입한 유저
                 const token = jwt.sign(
                     {
+                        id: exUser.id,
                         name: exUser.name,
                         email: exUser.email,
                     },
@@ -32,17 +33,18 @@ module.exports = () => {
             } else {
                 //프로필이미지 s3에 저장, s3url가져오기
                 const profileImageUrl = profile._json.properties.profile_image;
-                const s3Url = await uploadProfileImage(profileImageUrl);
-
+                const s3Url = await saveUploadOneImage({ body: { imageUrl: profileImageUrl } });
+                
                 // 새로운 유저
                 const newUser = await User.create({
                     name: profile.displayName,
                     email: profile._json && profile._json.kakao_account.email,
-                    profileImage: s3Url,
+                    profileImage:  s3Url.s3Url,
                 });
 
                 const token = jwt.sign(
                     {
+                        id: newUser.id,
                         name: newUser.name,
                         email: newUser.email,
                     },

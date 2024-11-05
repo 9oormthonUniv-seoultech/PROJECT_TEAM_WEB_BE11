@@ -35,7 +35,7 @@ class Review extends Sequelize.Model {
                     comment: '리뷰 작성 날짜',
                 },
                 content: {
-                    type: Sequelize.STRING(600),
+                    type: Sequelize.STRING(900),
                     allowNull: true,
                     comment: '리뷰 내용 (최대 300자)',
                 },
