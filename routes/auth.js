@@ -13,7 +13,7 @@ router.get('/kakao/callback', passport.authenticate('kakao', {
     const query = "?accessToken=" + token;
     res.locals.token = token;
 
-    res.redirect(`/home`); // 로그인 성공 시
+    res.redirect(`/auth/kakao`); // 로그인 성공 시
 });
 
 
