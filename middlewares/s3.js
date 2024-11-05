@@ -85,7 +85,68 @@ const saveUploadOneImage = async (req, res, next) => {
     }
 };
 
+// URL로 이미지 하나 업로드하는 미들웨어 (반환값 없고, s3 url을 req.body에 담음)
+const uploadOneImageUrl = async (req, res, next) => {
+    const imageUrl = req.body.imageUrl; 
+    try {
+        const response = await axios.get(imageUrl, { responseType: 'arraybuffer' });
 
+        mimeType = response.headers['content-type'];
+        console.log(mimeType);
+        let extension = '';
+        if (mimeType === 'image/jpeg') {
+            extension = '.jpg';
+        } else if (mimeType === 'image/png') {
+            extension = '.png';
+        } else if (mimeType === 'image/bmp') {
+            extension = '.bmp';
+        } else if (mimeType === 'application/octet-stream') {
+            mimeType = 'image/png';
+            extension = '.png';
+        } else {
+            throw new Error('허용된 파일 형식이 아닙니다');
+        }
+
+        const fileName = `${uuid()}${extension}`;
+        const params = {
+            Bucket: process.env.S3_BUCKET_NAME,
+            Key: fileName,
+            Body: response.data,
+            ContentType: mimeType,
+        };
+        await s3.putObject(params).promise();
+
+        const uploadedUrl = `https://${params.Bucket}.s3.ap-northeast-2.amazonaws.com/${params.Key}`;
+        req.body.uploadedUrl = uploadedUrl;
+        return next();
+    } catch (error) {
+        console.error('이미지 업로드 중 에러 발생:', error);
+        return res.status(500).json({ message: '이미지 업로드 중 에러 발생', error: error.message });
+    }
+};
+
+// 갤러리에서 이미지 하나 업로드하는 미들웨어 (사진 하나만 가능)
+const uploadOneImage = (req, res, next) => {
+    multer({
+        storage,
+        limits: { fileSize: 5 * 1024 * 1024 }, // 파일 크기 제한
+    }).single('file')(req, res, (err) => { // 파일 크기,개수 제한
+        if (err) {
+            return res.status(400).json({ error: err.message });
+        }
+    
+        console.log(req.file);
+        //S3에서 반환된 URL들을 저장하여 반환
+        if (req.file) {
+            const imageUrl = req.file.location;
+            console.log(imageUrl)
+            req.body.uploadedUrl = imageUrl; // 이미지 URL을 req.body에 저장
+        } else {
+            req.body.uploadedUrl = null; 
+        }
+        next();
+    });
+};
 
 const deleteImages = async (imageUrls) => {
     try {
@@ -116,4 +177,4 @@ const deleteImages = async (imageUrls) => {
     }
 };
 
-module.exports = {uploadFiveImages, saveUploadOneImage, deleteImages}
+module.exports = {uploadFiveImages, saveUploadOneImage, uploadOneImageUrl, uploadOneImage, deleteImages};

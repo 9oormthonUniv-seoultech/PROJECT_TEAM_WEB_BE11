@@ -4,6 +4,8 @@ const Sequelize = require('sequelize');
 const User = require('./user');
 const Photobooth = require('./photobooth');
 const Review = require('./review');
+const Photo = require('./photo');
+const PhotoTemp = require('./photoTemp');
 
 const env = process.env.NODE_ENV || 'development';
 const config = require('../configs/config')[env];
@@ -24,9 +26,17 @@ Photobooth.init(sequelize);
 db.Review = Review;
 Review.init(sequelize);
 
+db.Photo = Photo;
+Photo.init(sequelize);
+
+db.PhotoTemp = PhotoTemp;
+PhotoTemp.init(sequelize);
+
 // 관계 설정
 User.associate(db);
 Photobooth.associate(db);
 Review.associate(db);
+Photo.associate(db);
+PhotoTemp.associate(db);
 
 module.exports = db;
