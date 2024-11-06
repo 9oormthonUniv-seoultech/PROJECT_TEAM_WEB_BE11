@@ -63,6 +63,9 @@ app.use('/api/photo', photoRouter);
 const boothLikeRouter = require('./routes/boothLikeRouter');
 app.use('/api/booth', boothLikeRouter);
 
+const albumRouter = require('./routes/albumRouter');
+app.use('/api/album', albumRouter);
+
 // 스웨거 세팅
 const swaggerUi = require('swagger-ui-express');
 const YAML = require('yamljs');
