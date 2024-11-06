@@ -1,0 +1,74 @@
+post:
+  tags:
+    - Photo
+  summary: QR 코드를 통한 사진 업로드
+  description: QR 코드로부터 이미지 URL을 가져와 S3에 업로드하고, 해당 URL과 사용자 ID를 데이터베이스의 `photoTemp` 테이블에 저장
+  operationId: uploadPhotoByQR
+  parameters:
+    - name: url
+      in: query
+      required: true
+      description: QR 코드의 URL 지원되는 도메인(`haru8.mx2.co.kr`, `qr.seobuk.kr`)
+      schema:
+        type: string
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            user_id:
+              type: integer
+              description: 사진을 업로드하는 사용자의 ID
+          required:
+            - user_id
+  responses:
+    '201':
+      description: 성공적으로 사진이 업로드되고 데이터베이스에 저장됨
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: success
+              newTemp:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    description: 등록된 사진의 임시 레코드 ID
+                  user_id:
+                    type: integer
+                    description: 사용자의 ID
+                  image_url:
+                    type: string
+                    description: S3에 저장된 사진의 URL
+    '400':
+      description: 만료된 QR 코드 또는 지원되지 않는 도메인의 URL이 전달된 경우
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: fail
+              message:
+                type: string
+                example: 이미 만료된 QR입니다. 또는 지원되지 않는 도메인입니다.
+    '500':
+      description: 서버 에러로 인해 사진 업로드 실패
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: 이미지 업로드 중 에러 발생
+              error:
+                type: string
+                description: 에러 메시지
