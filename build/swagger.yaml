@@ -898,12 +898,14 @@ paths:
               schema:
                 type: object
                 properties:
-                  status:
-                    type: string
-                    example: success
-                  message:
-                    type: string
-                    example: 즐겨찾기 업데이트 성공
+                  photo_id:
+                    type: integer
+                    description: 즐겨찾기 상태가 업데이트된 사진의 ID
+                    example: 1
+                  photo_like:
+                    type: boolean
+                    description: 변경된 즐겨찾기 상태
+                    example: true
         '404':
           description: 해당 ID의 사진이 존재하지 않는 경우
           content:
