@@ -145,4 +145,17 @@ const getPhoto =  async (req, res) => {
     }
   };
 
-module.exports = { createTemp, updateInfo, updateRecord, savePhoto, deletePhoto, getPhoto };
+const sharePhoto = async (req, res) => {
+    const { photo_id } = req.params;
+    try {
+        const photo = await Photo.findByPk(photo_id);
+        if (!photo) {
+            res.status(404).json({ status: 'fail', message: '사진을 찾을 수 없습니다.'});
+        }
+        res.status(200).json({ status: "success",shareLink: photo.image_url });
+    } catch (error) {
+        res.status(500).json({ status: 'fail', message: " 공유 링크 생성 실패"});
+    }
+}
+
+module.exports = { createTemp, updateInfo, updateRecord, savePhoto, deletePhoto, getPhoto, sharePhoto };
