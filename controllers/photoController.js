@@ -239,7 +239,11 @@ const photoLike = async (req, res) => {
     photo.photo_like = !photo.photo_like;
     await photo.save();
 
-    res.status(200).json({ status: 'success', message: "즐겨찾기 업데이트 성공"});
+    return res.status(200).json({
+        photo_id: photo.id,
+        photo_like: photo.photo_like,
+      },
+    );
   } catch (error) {
     console.error('photoLike Error', error);
     res.status(500).json({ status: 'fail', message: "즐겨찾기 업데이트 실패"});
