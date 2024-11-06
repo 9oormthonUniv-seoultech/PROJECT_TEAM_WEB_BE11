@@ -232,14 +232,14 @@ const photoLike = async (req, res) => {
 
     const photo = await Photo.findByPk(photo_id);
     if (!photo) {
-      return res.status(404).json({ status: 'fail', message: '사진을 찾을 수 없습니다.'});
+      res.status(404).json({ status: 'fail', message: '사진을 찾을 수 없습니다.'});
     }
 
     // photo_like 값 반대로 변경
     photo.photo_like = !photo.photo_like;
     await photo.save();
 
-    return res.status(200).json({ status: 'success', message: "즐겨찾기 업데이트 성공"});
+    res.status(200).json({ status: 'success', message: "즐겨찾기 업데이트 성공"});
   } catch (error) {
     console.error('photoLike Error', error);
     res.status(500).json({ status: 'fail', message: "즐겨찾기 업데이트 실패"});
