@@ -1,0 +1,74 @@
+get:
+  tags:
+    - Photo
+  summary: "사용자의 앨범 조회"
+  description: "사용자가 등록한 사진을 다양한 필터(date, brand, location, hashtag)를 통해 조회합니다."
+  parameters:
+    - in: path
+      name: user_id
+      required: true
+      schema:
+        type: integer
+      description: "사용자의 ID"
+
+    - in: query
+      name: date
+      required: false
+      schema:
+        type: string
+        format: date
+        example: "2024-11"
+      description: "조회할 사진의 연도와 월 (YYYY-MM 형식)"
+
+    - in: query
+      name: brand
+      required: false
+      schema:
+        type: string
+        example: "하루필름"
+      description: "필터링할 포토부스 브랜드명"
+
+    - in: query
+      name: location
+      required: false
+      schema:
+        type: boolean
+        example: true
+      description: "사용자 현재 위치를 기반으로 필터링 여부 (true: 현재 위치 기반)"
+
+    - in: query
+      name: hashtag
+      required: false
+      schema:
+        type: string
+        example: "여행"
+      description: "해시태그를 통해 필터링 (부분 일치 가능)"
+
+  responses:
+    200:
+      description: "필터링된 사진 목록을 반환합니다."
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              photonum:
+                type: integer
+                description: "조회된 사진 수 (필터링 결과가 없는 경우 0)"
+              photos:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    images:
+                      type: string
+                      description: "사진 URL"
+                      example: "https://example.com/photo1.jpg"
+                    photo_like:
+                      type: boolean
+                      description: "사진 즐겨찾기 여부"
+                      example: true
+    404:
+      description: "사진이 존재하지 않거나 조회된 사진이 없는 경우"
+    500:
+      description: "서버 오류"

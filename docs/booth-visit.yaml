@@ -1,0 +1,58 @@
+get:
+  tags:
+    - User
+  summary: "사용자가 최근 한 달 내에 방문한 부스 조회"
+  description: "사용자의 최근 한 달 내 방문한 부스 목록을 조회합니다."
+  parameters:
+    - in: path
+      name: user_id
+      required: true
+      schema:
+        type: integer
+      description: "방문한 부스를 조회할 사용자 ID"
+
+  responses:
+    200:
+      description: "사용자가 최근 한 달 내 방문한 부스 목록을 반환합니다."
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                date:
+                  type: string
+                  format: date
+                  description: "사진을 찍은 날짜"
+                  example: "2024-10-10"
+                photobooth_name:
+                  type: string
+                  description: "방문한 포토부스 이름"
+                  example: "하루필름 강남점"
+    404:
+      description: "최근 한 달 내에 방문한 부스가 없는 경우"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: "fail"
+              message:
+                type: string
+                example: "방문한 부스가 없습니다."
+    500:
+      description: "서버 오류 발생 시"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: "fail"
+              message:
+                type: string
+                example: "방문한 부스 찾기 실패"

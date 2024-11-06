@@ -1,5 +1,6 @@
 const Review = require('../models/review');
 const Photobooth = require('../models/photobooth');
+const Photo = require('../models/photo');
 const { deleteImages} = require('../middlewares/s3');
 const {updateRating, updateKeywords } = require('../middlewares/reviewUpdate');
 
@@ -19,6 +20,18 @@ const createReview = async (req, res) => {
       }
   
       const photobooth_id = photobooth.id;
+
+      const userPhoto = await Photo.findOne({
+        where: {
+          user_id: user_id,
+          photobooth_id: photobooth_id,
+        }
+      });
+      
+      // 사용자가 방문하지 않은 포토부스의 경우 작성불가
+      if (!userPhoto) {
+        return res.status(403).json({ message: '방문한 포토부스가 아닙니다.' });
+      }
       req.body.photobooth_id = photobooth_id;
       req.body.increment = 1;
 
@@ -26,6 +39,7 @@ const createReview = async (req, res) => {
       const boothKeywords = Array.isArray(booth_keyword) ? booth_keyword : [booth_keyword];
       const photoKeywords = Array.isArray(photo_keyword) ? photo_keyword : [photo_keyword];
 
+      const reviewDate = date && !isNaN(new Date(date).getTime()) ? new Date(date) : new Date();
 
     // 리뷰 생성
     const newReview = await Review.create({
@@ -36,7 +50,7 @@ const createReview = async (req, res) => {
       photo_keyword: photoKeywords, 
       content,
       image_url: imageUrls && imageUrls.length > 0 ? imageUrls : null,  // S3에서 반환된 URL 저장
-      date: date,
+      date: reviewDate,
     });
 
     await updateKeywords(req, res, async () => {
