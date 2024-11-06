@@ -929,48 +929,63 @@ paths:
   '/api/photo/{photo_id}':
     get:
       tags:
-        - User
-      summary: 사용자가 최근 한 달 내에 방문한 부스 조회
-      description: 사용자의 최근 한 달 내 방문한 부스 목록을 조회합니다.
+        - Photo
+      summary: 특정 사진 상세 조회
+      description: '특정 사진의 상세 정보를 조회합니다. 포토부스 이름, 날짜, 이미지 URL, 기록, 해시태그, 즐겨찾기 여부를 반환합니다.'
       parameters:
         - in: path
-          name: user_id
+          name: photo_id
           required: true
           schema:
             type: integer
-          description: 방문한 부스를 조회할 사용자 ID
+          description: 조회할 사진의 ID
       responses:
         '200':
-          description: 사용자가 최근 한 달 내 방문한 부스 목록을 반환합니다.
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    date:
-                      type: string
-                      format: date
-                      description: 사진을 찍은 날짜
-                      example: '2024-10-10'
-                    photobooth_name:
-                      type: string
-                      description: 방문한 포토부스 이름
-                      example: 하루필름 강남점
-        '404':
-          description: 최근 한 달 내에 방문한 부스가 없는 경우
+          description: 요청한 사진의 상세 정보를 반환합니다.
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  status:
+                  date:
                     type: string
-                    example: fail
+                    format: date
+                    description: 사진이 촬영된 날짜
+                    example: '2024-10-10'
+                  photobooth_name:
+                    type: string
+                    description: 사진이 촬영된 포토부스 이름
+                    example: 하루필름 강남점
+                  hashtags:
+                    type: array
+                    items:
+                      type: string
+                    description: 사진에 등록된 해시태그 목록
+                    example:
+                      - 여행
+                      - 친구와
+                  image_url:
+                    type: string
+                    description: 사진 URL
+                    example: 'https://example.com/photo.jpg'
+                  record:
+                    type: string
+                    description: 사진에 대한 기록
+                    example: 즐거운 하루를 기록합니다.
+                  photo_like:
+                    type: boolean
+                    description: 사진 즐겨찾기 여부
+                    example: true
+        '404':
+          description: 요청한 ID의 사진이 존재하지 않는 경우
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
                   message:
                     type: string
-                    example: 방문한 부스가 없습니다.
+                    example: 사진을 찾을 수 없습니다.
         '500':
           description: 서버 오류 발생 시
           content:
@@ -978,12 +993,9 @@ paths:
               schema:
                 type: object
                 properties:
-                  status:
+                  error:
                     type: string
-                    example: fail
-                  message:
-                    type: string
-                    example: 방문한 부스 찾기 실패
+                    example: Internal Server Error
   /api/photo/temp/upload/qr:
     post:
       tags:

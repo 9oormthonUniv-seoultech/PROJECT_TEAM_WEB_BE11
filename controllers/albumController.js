@@ -26,7 +26,7 @@ const getAlbum = async (req, res) => {
           ],
         },
         order: [['date', 'DESC']],
-        attributes: ['image_url', 'photo_like'],
+        attributes: ['image_url', 'photo_like', 'id'],
       });
     } else if (brand) { // 브랜드 이름 필터링
       console.log("brand로 들어옴");
@@ -40,7 +40,7 @@ const getAlbum = async (req, res) => {
           },
         ],
         order: [['date', 'DESC']],
-        attributes: ['image_url', 'photo_like'],
+        attributes: ['image_url', 'photo_like', 'id'],
       });
     } else if (location && req.nearbyBoothIds && req.nearbyBoothIds.length > 0) {
       // location 필터링 - 미들웨어 반환값 이용, 현재위치 시에는 location=true로 받아야함
@@ -51,7 +51,7 @@ const getAlbum = async (req, res) => {
           photobooth_id: { [Op.in]: req.nearbyBoothIds },
         },
         order: [['date', 'DESC']],
-        attributes: ['image_url', 'photo_like'],
+        attributes: ['image_url', 'photo_like', 'id'],
       });
     } else if (hashtag) { // 해시태그 필터링
       console.log("hashtag로 들어옴");
@@ -65,7 +65,7 @@ const getAlbum = async (req, res) => {
           ],
         },
         order: [['date', 'DESC']],
-        attributes: ['image_url', 'photo_like'],
+        attributes: ['image_url', 'photo_like', 'id'],
       });
     } else {
       console.log("마지막 else로");
@@ -73,7 +73,7 @@ const getAlbum = async (req, res) => {
       photos = await Photo.findAll({
         where: { user_id: user_id },
         order: [['date', 'DESC']],
-        attributes: ['image_url', 'photo_like'],
+        attributes: ['image_url', 'photo_like', 'id'],
       });
     }
 
@@ -87,6 +87,7 @@ const getAlbum = async (req, res) => {
     const response = photos.map((photo) => ({
       images: photo.image_url,
       photo_like: photo.photo_like,
+      photo_id :photo.id ,
     }));
 
     return res.status(200).json(response);

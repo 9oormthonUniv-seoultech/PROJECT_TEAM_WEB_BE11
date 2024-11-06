@@ -10,7 +10,6 @@ get:
       schema:
         type: integer
       description: "방문한 부스를 조회할 사용자 ID"
-
   responses:
     200:
       description: "사용자가 최근 한 달 내 방문한 부스 목록을 반환합니다."
