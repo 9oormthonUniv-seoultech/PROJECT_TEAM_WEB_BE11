@@ -3,6 +3,7 @@ const router = express.Router();
 const { getUserById, updateUser, deleteUser } = require('../controllers/userController');
 const { uploadFiveImages} = require('../middlewares/s3'); 
 const { readBoothLike } = require('../controllers/boothLikeController');
+const { getBoothVisit } = require('../controllers/photoController');
 
 // (마이페이지) 회원 조회 라우터
 router.get('/:user_id', getUserById);
@@ -15,5 +16,8 @@ router.delete('/:user_id', deleteUser);
 
 // 회원이 즐겨찾기 한 포토부스 조회
 router.get('/:user_id/booth-like', readBoothLike);
+
+// 회원이 방문한 포토부스 조회
+router.get('/:user_id/booth-visit', getBoothVisit);
 
 module.exports = router;

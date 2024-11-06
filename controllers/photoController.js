@@ -158,4 +158,64 @@ const sharePhoto = async (req, res) => {
     }
 }
 
-module.exports = { createTemp, updateInfo, updateRecord, savePhoto, deletePhoto, getPhoto, sharePhoto };
+// 사용자가 방문한 부스 get
+const getBoothVisit = async (req, res) => {
+  try {
+    const { user_id } = req.params;
+
+    const photos = await Photo.findAll({
+      where: { user_id: user_id },
+      include: [
+        {
+          model: Photobooth,
+          attributes: ['name'], 
+        },
+      ],
+      attributes: ['date'],
+      order: [['date', 'DESC']],
+    });
+
+    // 사진이 없는 경우
+    if (!photos || photos.length === 0) {
+      return res.status(404).json({ status: 'fail', message: '방문한 부스가 없습니다.' });
+    }
+
+    const response = photos.map((photo) => ({
+      date: photo.date,
+      photobooth_name: photo.Photobooth ? photo.Photobooth.name : null,
+    }));
+
+    return res.status(200).json(response);
+  } catch (error) {
+    console.error('getBoothVisit Error', error);
+    return res.status(500).json({ status: 'fail', message: '방문한 부스 찾기 실패' });
+  }
+};
+
+
+// 사진 즐겨찾기
+const photoLike = async (req, res) => {
+  try {
+    const { photo_id } = req.params;
+
+    const photo = await Photo.findByPk(photo_id);
+    if (!photo) {
+      return res.status(404).json({ status: 'fail', message: '사진을 찾을 수 없습니다.'});
+    }
+
+    // photo_like 값 반대로 변경
+    photo.photo_like = !photo.photo_like;
+    await photo.save();
+
+    return res.status(200).json({
+      message: '사진 즐겨찾기 상태가 업데이트 성공',
+      photo_id: photo.id,
+      photo_like: photo.photo_like,
+    });
+  } catch (error) {
+    console.error('photoLike Error', error);
+    res.status(500).json({ status: 'fail', message: "즐겨찾기 업데이트 실패"});
+  }
+};
+
+module.exports = { createTemp, updateInfo, updateRecord, savePhoto, deletePhoto, getPhoto, sharePhoto , getBoothVisit, photoLike };
