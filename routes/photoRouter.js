@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { uploadOneImageUrl, uploadOneImage } = require('../middlewares/s3');
 const { uploadImageByQR } = require('../middlewares/uploadPhoto');
-const { createTemp, updateInfo, updateRecord, savePhoto, deletePhoto, getPhoto, sharePhoto } = require('../controllers/photoController');
+const { createTemp, updateInfo, updateRecord, savePhoto, deletePhoto, getPhoto, sharePhoto, getBooth } = require('../controllers/photoController');
 
 // 사진 등록용 라우트 1: 사용자id와 사진url 저장 (photoTemp 테이블)
 router.post('/temp/upload/qr',  uploadImageByQR, uploadOneImageUrl, createTemp); // 1) QR 업로드
@@ -10,6 +10,9 @@ router.post('/temp/upload/img', uploadOneImage, createTemp) // 2) 갤러리 업�
 
 // 사진 등록용 라우트 2: date와 photobooth id 추가 저장 (photoTemp 테이블)
 router.put('/temp/:photoTemp_id/update-info', updateInfo);
+
+// 사진 등록 지점 검색용 라우트
+router.get('/temp/update-info', getBooth);
 
 // 사진 등록용 라우트 3: hashtag와 record 추가 저장 (photoTemp 테이블)
 router.put('/temp/:photoTemp_id/update-record', updateRecord);

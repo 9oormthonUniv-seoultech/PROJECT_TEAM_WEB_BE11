@@ -1,0 +1,54 @@
+get:
+  tags:
+    - Photo
+  summary: 사진 공유 링크 가져오기
+  description: 지정된 ID의 사진에 대한 공유 링크를 반환
+  operationId: getSharePhotoLink
+  parameters:
+    - name: photo_id
+      in: path
+      required: true
+      description: 공유할 사진 레코드의 ID
+      schema:
+        type: integer
+  responses:
+    '200':
+      description: 사진의 공유 링크가 성공적으로 반환됨
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: success
+              shareLink:
+                type: string
+                description: 공유 링크 (S3에 저장된 사진의 URL)
+                example: "https://example-bucket.s3.amazonaws.com/photo.jpg"
+    '404':
+      description: 해당 ID의 사진을 찾을 수 없음
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: fail
+              message:
+                type: string
+                example: 사진을 찾을 수 없습니다.
+    '500':
+      description: 서버 에러로 인해 공유 링크 생성 실패
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: fail
+              message:
+                type: string
+                example: 공유 링크 생성 실패

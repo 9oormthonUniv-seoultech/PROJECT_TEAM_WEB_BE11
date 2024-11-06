@@ -1126,3 +1126,139 @@ paths:
                   message:
                     type: string
                     example: 이미지 저장에 실패했습니다.
+  '/api/photo/delete/{photo_id}':
+    delete:
+      tags:
+        - Photo
+      summary: 사진 삭제
+      description: 지정된 ID의 사진을 S3에서 삭제하고 데이터베이스의 `photo` 테이블에서 제거
+      operationId: deletePhoto
+      parameters:
+        - name: photo_id
+          in: path
+          required: true
+          description: 삭제할 사진 레코드의 ID
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: 사진이 성공적으로 삭제됨 (콘텐츠 없음)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 이미지를 삭제했습니다.
+        '500':
+          description: 서버 에러로 인해 사진 삭제 실패
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 이미지 삭제에 실패했습니다.
+  '/api/photo/share/{photo_id}':
+    get:
+      tags:
+        - Photo
+      summary: 사진 공유 링크 가져오기
+      description: 지정된 ID의 사진에 대한 공유 링크를 반환
+      operationId: getSharePhotoLink
+      parameters:
+        - name: photo_id
+          in: path
+          required: true
+          description: 공유할 사진 레코드의 ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 사진의 공유 링크가 성공적으로 반환됨
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  shareLink:
+                    type: string
+                    description: 공유 링크 (S3에 저장된 사진의 URL)
+                    example: 'https://example-bucket.s3.amazonaws.com/photo.jpg'
+        '404':
+          description: 해당 ID의 사진을 찾을 수 없음
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: fail
+                  message:
+                    type: string
+                    example: 사진을 찾을 수 없습니다.
+        '500':
+          description: 서버 에러로 인해 공유 링크 생성 실패
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: fail
+                  message:
+                    type: string
+                    example: 공유 링크 생성 실패
+  /api/photo/temp/update-info:
+    get:
+      summary: 포토부스 지점 검색
+      description: 검색어를 입력하여 포토부스 이름과 ID를 조회합니다.
+      parameters:
+        - name: searchTerm
+          in: query
+          required: true
+          description: 검색어 (포토부스 이름의 일부)
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 검색된 포토부스 목록
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      description: 포토부스 ID
+                    name:
+                      type: string
+                      description: 포토부스 이름
+        '400':
+          description: 검색어가 제공되지 않았거나 유효하지 않음
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 검색어가 필요합니다.
+        '500':
+          description: 서버 오류
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string

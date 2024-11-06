@@ -33,3 +33,9 @@ paths:
     $ref: './photo-record.yaml'
   /api/photo/save/{photoTemp_id}:
     $ref: './photo-save.yaml'
+  /api/photo/delete/{photo_id}:
+    $ref: './photo-delete.yaml'
+  /api/photo/share/{photo_id}:
+    $ref: './photo-share.yaml'
+  /api/photo/temp/update-info:
+    $ref: './photo-searchBooth.yaml'

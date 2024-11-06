@@ -1,0 +1,46 @@
+get:
+  summary: "포토부스 지점 검색"
+  description: "검색어를 입력하여 포토부스 이름과 ID를 조회합니다."
+  parameters:
+    - name: searchTerm
+      in: query
+      required: true
+      description: "검색어 (포토부스 이름의 일부)"
+      schema:
+        type: string
+  responses:
+    200:
+      description: "검색된 포토부스 목록"
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: integer
+                  description: "포토부스 ID"
+                name:
+                  type: string
+                  description: "포토부스 이름"
+    400:
+      description: "검색어가 제공되지 않았거나 유효하지 않음"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "검색어가 필요합니다."
+    500:
+      description: "서버 오류"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+          
