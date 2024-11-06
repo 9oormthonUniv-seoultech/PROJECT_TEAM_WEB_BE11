@@ -4,6 +4,7 @@ const User = require('../models/user');
 const Photobooth = require('../models/photobooth');
 const { deleteTemp } = require('../middlewares/uploadPhoto');
 const { deleteImages } = require('../middlewares/s3');
+const { Sequelize, Op } = require('sequelize');
 
 const createTemp = async (req, res) => {
     try{
@@ -163,8 +164,16 @@ const getBoothVisit = async (req, res) => {
   try {
     const { user_id } = req.params;
 
+    const oneMonthAgo = new Date();
+    oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+
     const photos = await Photo.findAll({
-      where: { user_id: user_id },
+      where: {
+        user_id: user_id,
+        date: {
+          [Op.gte]: oneMonthAgo, // 한 달 이내의 날짜만 포함
+        },
+      },
       include: [
         {
           model: Photobooth,
@@ -207,11 +216,7 @@ const photoLike = async (req, res) => {
     photo.photo_like = !photo.photo_like;
     await photo.save();
 
-    return res.status(200).json({
-      message: '사진 즐겨찾기 상태가 업데이트 성공',
-      photo_id: photo.id,
-      photo_like: photo.photo_like,
-    });
+    return res.status(200).json({ status: 'success', message: "즐겨찾기 업데이트 성공"});
   } catch (error) {
     console.error('photoLike Error', error);
     res.status(500).json({ status: 'fail', message: "즐겨찾기 업데이트 실패"});

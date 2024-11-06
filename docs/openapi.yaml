@@ -9,6 +9,8 @@ servers:
 paths:
   /api/user/{user_id}:
     $ref: './user.yaml'
+  /api/user/{user_id}/booth-visit:
+    $ref: './booth-visit.yaml'
   /api/review/user/{user_id}:
     $ref: './review-user.yaml'
   /api/review/mypage/{user_id}:
@@ -23,3 +25,10 @@ paths:
     $ref: './map.yaml'
   /api/map/search:
     $ref: './map-search.yaml'
+  /api/album/{user_id}:
+    $ref: './album.yaml'
+  /api/photo/like/{photo_id}:
+    $ref: './photo-like.yaml'
+  /api/photo/{photo_id}:
+      $ref: './get-photo.yaml'
+  
