@@ -288,7 +288,7 @@ paths:
     responses:
       '201':
         description: 리뷰 작성 성공
-  /api/review/mypage/{user_id}:
+  '/api/review/mypage/{user_id}':
     get:
       tags:
         - Review
@@ -348,7 +348,7 @@ paths:
                     nullable: true
         '500':
           description: 리뷰를 가져오는 중 오류가 발생했습니다.
-  /api/review/{review_id}:
+  '/api/review/{review_id}':
     delete:
       tags:
         - Review
@@ -436,7 +436,7 @@ paths:
           description: 리뷰를 찾을 수 없습니다.
         '500':
           description: 리뷰를 조회하는 중 오류가 발생했습니다.
-  /api/review/booth/{photobooth_id}:
+  '/api/review/booth/{photobooth_id}':
     get:
       tags:
         - Review
@@ -563,7 +563,7 @@ paths:
                           example: 10
         '500':
           description: 리뷰를 가져오는 중 오류가 발생했습니다.
-  /api/review/boothphoto/{photobooth_id}:
+  '/api/review/boothphoto/{photobooth_id}':
     get:
       tags:
         - Review
@@ -803,7 +803,7 @@ paths:
                     example: 검색어를 입력하세요.
         '500':
           description: Internal server error.
-/api/album/{user_id}:
+  '/api/album/{user_id}':
     get:
       tags:
         - Photo
@@ -848,6 +848,142 @@ paths:
       responses:
         '200':
           description: 필터링된 사진 목록을 반환합니다.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  photonum:
+                    type: integer
+                    description: 조회된 사진 수 (필터링 결과가 없는 경우 0)
+                  photos:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        images:
+                          type: string
+                          description: 사진 URL
+                          example: 'https://example.com/photo1.jpg'
+                        photo_like:
+                          type: boolean
+                          description: 사진 즐겨찾기 여부
+                          example: true
+        '404':
+          description: 사진이 존재하지 않거나 조회된 사진이 없는 경우
+        '500':
+          description: 서버 오류
+  '/api/photo/like/{photo_id}':
+    post:
+      tags:
+        - Photo
+      summary: 사진 즐겨찾기 토글
+      description: '특정 사진의 즐겨찾기 상태를 반대로 변경합니다. 사진이 즐겨찾기에 등록되어 있으면 해제하고, 해제되어 있으면 등록합니다.'
+      parameters:
+        - in: path
+          name: photo_id
+          required: true
+          schema:
+            type: integer
+          description: 즐겨찾기 상태를 변경할 사진의 ID
+      responses:
+        '200':
+          description: 즐겨찾기 상태가 성공적으로 업데이트되었습니다.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: 즐겨찾기 업데이트 성공
+        '404':
+          description: 해당 ID의 사진이 존재하지 않는 경우
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: fail
+                  message:
+                    type: string
+                    example: 사진을 찾을 수 없습니다.
+        '500':
+          description: 서버 오류 발생 시
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: fail
+                  message:
+                    type: string
+                    example: 즐겨찾기 업데이트 실패
+  '/api/photo/{photo_id}':
+    get:
+      tags:
+        - User
+      summary: 사용자가 최근 한 달 내에 방문한 부스 조회
+      description: 사용자의 최근 한 달 내 방문한 부스 목록을 조회합니다.
+      parameters:
+        - in: path
+          name: user_id
+          required: true
+          schema:
+            type: integer
+          description: 방문한 부스를 조회할 사용자 ID
+      responses:
+        '200':
+          description: 사용자가 최근 한 달 내 방문한 부스 목록을 반환합니다.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    date:
+                      type: string
+                      format: date
+                      description: 사진을 찍은 날짜
+                      example: '2024-10-10'
+                    photobooth_name:
+                      type: string
+                      description: 방문한 포토부스 이름
+                      example: 하루필름 강남점
+        '404':
+          description: 최근 한 달 내에 방문한 부스가 없는 경우
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: fail
+                  message:
+                    type: string
+                    example: 방문한 부스가 없습니다.
+        '500':
+          description: 서버 오류 발생 시
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: fail
+                  message:
+                    type: string
+                    example: 방문한 부스 찾기 실패
   /api/photo/temp/upload/qr:
     post:
       tags:
@@ -993,7 +1129,7 @@ paths:
                   message:
                     type: string
                     example: 이미지 업로드에 실패했습니다.
-  /api/photo/temp/{photoTemp_id}/update-info:
+  '/api/photo/temp/{photoTemp_id}/update-info':
     put:
       tags:
         - Photo
@@ -1107,42 +1243,6 @@ paths:
               schema:
                 type: object
                 properties:
-                  photonum:
-                    type: integer
-                    description: 조회된 사진 수 (필터링 결과가 없는 경우 0)
-                  photos:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        images:
-                          type: string
-                          description: 사진 URL
-                          example: 'https://example.com/photo1.jpg'
-                        photo_like:
-                          type: boolean
-                          description: 사진 즐겨찾기 여부
-                          example: true
-        '404':
-          description: 사진이 존재하지 않거나 조회된 사진이 없는 경우
-        '500':
-          description: 서버 오류
-  '/api/photo/like/{photo_id}':
-    post:
-      tags:
-        - Photo
-      summary: 사진 즐겨찾기 토글
-      description: '특정 사진의 즐겨찾기 상태를 반대로 변경합니다. 사진이 즐겨찾기에 등록되어 있으면 해제하고, 해제되어 있으면 등록합니다.'
-      parameters:
-        - in: path
-          name: photo_id
-          required: true
-          schema:
-            type: integer
-          description: 즐겨찾기 상태를 변경할 사진의 ID
-      responses:
-        '200':
-          description: 즐겨찾기 상태가 성공적으로 업데이트되었습니다.
                   status:
                     type: string
                     example: success
@@ -1207,9 +1307,6 @@ paths:
                     example: success
                   message:
                     type: string
-                    example: 즐겨찾기 업데이트 성공
-        '404':
-          description: 해당 ID의 사진이 존재하지 않는 경우
                     example: 사진이 성공적으로 저장되었습니다!
                   newPhoto:
                     type: object
@@ -1254,9 +1351,6 @@ paths:
                     example: fail
                   message:
                     type: string
-                    example: 사진을 찾을 수 없습니다.
-        '500':
-          description: 서버 오류 발생 시
                     example: Temp 삭제에 실패했습니다.
         '500':
           description: 서버 에러로 인해 최종 사진 저장 실패
@@ -1270,41 +1364,6 @@ paths:
                     example: fail
                   message:
                     type: string
-                    example: 즐겨찾기 업데이트 실패
-  '/api/photo/{photo_id}':
-    get:
-      tags:
-        - User
-      summary: 사용자가 최근 한 달 내에 방문한 부스 조회
-      description: 사용자의 최근 한 달 내 방문한 부스 목록을 조회합니다.
-      parameters:
-        - in: path
-          name: user_id
-          required: true
-          schema:
-            type: integer
-          description: 방문한 부스를 조회할 사용자 ID
-      responses:
-        '200':
-          description: 사용자가 최근 한 달 내 방문한 부스 목록을 반환합니다.
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    date:
-                      type: string
-                      format: date
-                      description: 사진을 찍은 날짜
-                      example: '2024-10-10'
-                    photobooth_name:
-                      type: string
-                      description: 방문한 포토부스 이름
-                      example: 하루필름 강남점
-        '404':
-          description: 최근 한 달 내에 방문한 부스가 없는 경우
                     example: 이미지 저장에 실패했습니다.
   '/api/photo/delete/{photo_id}':
     delete:
@@ -1382,9 +1441,6 @@ paths:
                     example: fail
                   message:
                     type: string
-                    example: 방문한 부스가 없습니다.
-        '500':
-          description: 서버 오류 발생 시
                     example: 사진을 찾을 수 없습니다.
         '500':
           description: 서버 에러로 인해 공유 링크 생성 실패
@@ -1398,7 +1454,6 @@ paths:
                     example: fail
                   message:
                     type: string
-                    example: 방문한 부스 찾기 실패
                     example: 공유 링크 생성 실패
   /api/photo/temp/update-info:
     get:
