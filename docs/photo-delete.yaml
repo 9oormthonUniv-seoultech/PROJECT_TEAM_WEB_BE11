@@ -1,0 +1,34 @@
+delete:
+  tags:
+    - Photo
+  summary: 사진 삭제
+  description: 지정된 ID의 사진을 S3에서 삭제하고 데이터베이스의 `photo` 테이블에서 제거
+  operationId: deletePhoto
+  parameters:
+    - name: photo_id
+      in: path
+      required: true
+      description: 삭제할 사진 레코드의 ID
+      schema:
+        type: integer
+  responses:
+    '204':
+      description: 사진이 성공적으로 삭제됨 (콘텐츠 없음)
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: 이미지를 삭제했습니다.
+    '500':
+      description: 서버 에러로 인해 사진 삭제 실패
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: 이미지 삭제에 실패했습니다.

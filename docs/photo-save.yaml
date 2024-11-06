@@ -1,0 +1,84 @@
+post:
+  tags:
+    - Photo
+  summary: 임시 데이터 최종 저장
+  description: 임시 테이블 `photoTemp`에 있는 데이터를 `photo` 테이블에 저장하고, 임시 레코드 삭제
+  operationId: saveFinalPhoto
+  parameters:
+    - name: photoTemp_id
+      in: path
+      required: true
+      description: 저장할 임시 사진 레코드의 ID
+      schema:
+        type: integer
+  responses:
+    '201':
+      description: 사진이 성공적으로 저장되고 임시 데이터가 삭제됨
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: success
+              message:
+                type: string
+                example: 사진이 성공적으로 저장되었습니다!
+              newPhoto:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    description: 최종 저장된 사진 레코드의 ID
+                  user_id:
+                    type: integer
+                    description: 사용자의 ID
+                  photobooth_id:
+                    type: integer
+                    description: 사진을 찍은 포토부스의 ID
+                  image_url:
+                    type: string
+                    description: 최종 저장된 사진의 URL
+                  date:
+                    type: string
+                    format: date
+                    description: 사진을 찍은 날짜
+                  record:
+                    type: string
+                    description: 줄글 기록 내용
+                  hashtag_1:
+                    type: string
+                    description: 첫 번째 해시태그
+                  hashtag_2:
+                    type: string
+                    description: 두 번째 해시태그
+                  hashtag_3:
+                    type: string
+                    description: 세 번째 해시태그
+    '400':
+      description: 임시 테이블에서 레코드 삭제 실패
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: fail
+              message:
+                type: string
+                example: Temp 삭제에 실패했습니다.
+    '500':
+      description: 서버 에러로 인해 최종 사진 저장 실패
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: fail
+              message:
+                type: string
+                example: 이미지 저장에 실패했습니다.

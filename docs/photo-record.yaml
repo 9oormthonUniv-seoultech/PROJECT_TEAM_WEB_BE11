@@ -1,0 +1,79 @@
+put:
+  tags:
+    - Photo
+  summary: 해시태그 및 기록 추가
+  description: 임시 사진 레코드에 해시태그와 줄글 기록을 업데이트
+  operationId: updatePhotoRecord
+  parameters:
+    - name: photoTemp_id
+      in: path
+      required: true
+      description: 업데이트할 사진 레코드의 ID
+      schema:
+        type: integer
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            hashtag_1:
+              type: string
+              description: 첫 번째 해시태그 (최대 10자)
+            hashtag_2:
+              type: string
+              description: 두 번째 해시태그 (최대 10자)
+            hashtag_3:
+              type: string
+              description: 세 번째 해시태그 (최대 10자)
+            record:
+              type: string
+              description: 줄글 기록 내용
+          required:
+            - record
+  responses:
+    '200':
+      description: 해시태그와 기록이 성공적으로 추가됨
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: success
+              message:
+                type: string
+                example: 해시태그와 기록이 추가되었습니다.
+              temp:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    description: 사진 레코드의 ID
+                  hashtag_1:
+                    type: string
+                    description: 첫 번째 해시태그
+                  hashtag_2:
+                    type: string
+                    description: 두 번째 해시태그
+                  hashtag_3:
+                    type: string
+                    description: 세 번째 해시태그
+                  record:
+                    type: string
+                    description: 줄글 기록 내용
+    '500':
+      description: 서버 에러로 인해 해시태그 및 기록 업데이트 실패
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: fail
+              message:
+                type: string
+                example: 이미지 업로드에 실패했습니다.

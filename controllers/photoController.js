@@ -6,6 +6,7 @@ const { deleteTemp } = require('../middlewares/uploadPhoto');
 const { deleteImages } = require('../middlewares/s3');
 const { Sequelize, Op } = require('sequelize');
 
+
 const createTemp = async (req, res) => {
     try{
         console.log(req.body);
@@ -157,7 +158,29 @@ const sharePhoto = async (req, res) => {
     } catch (error) {
         res.status(500).json({ status: 'fail', message: " 공유 링크 생성 실패"});
     }
-}
+};
+
+const getBooth = async(req, res) => {
+    const { searchTerm } = req.query;
+    if (!searchTerm) {
+        return res.status(400).json({ message: '검색어가 필요합니다.' });
+    }
+    try {
+        const results = await Photobooth.findAll({
+            attributes: ['id', 'name'],
+            where: {
+                name: {
+                    [Op.like]: `%${searchTerm}%`,
+                },
+            },
+        });
+    
+        res.status(200).json(results);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: '데이터베이스 오류가 발생했습니다.' });
+    }
+};
 
 // 사용자가 방문한 부스 get
 const getBoothVisit = async (req, res) => {
@@ -223,4 +246,5 @@ const photoLike = async (req, res) => {
   }
 };
 
-module.exports = { createTemp, updateInfo, updateRecord, savePhoto, deletePhoto, getPhoto, sharePhoto , getBoothVisit, photoLike };
+module.exports = { createTemp, updateInfo, updateRecord, savePhoto, deletePhoto, getPhoto, sharePhoto , getBooth, getBoothVisit, photoLike };
+

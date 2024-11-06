@@ -1,0 +1,70 @@
+put:
+  tags:
+    - Photo
+  summary: 날짜와 포토부스 정보 추가
+  description: 임시 사진 레코드에 찍은 날짜와 포토부스 정보를 업데이트
+  operationId: updatePhotoInfo
+  parameters:
+    - name: photoTemp_id
+      in: path
+      required: true
+      description: 업데이트할 사진 레코드의 ID
+      schema:
+        type: integer
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            date:
+              type: string
+              format: date
+              description: 사진 찍은 날짜 (YYYY-MM-DD)
+            photobooth_id:
+              type: integer
+              description: 사진을 찍은 포토부스의 ID
+          required:
+            - date
+            - photobooth_id
+  responses:
+    '200':
+      description: 날짜 및 포토부스 정보가 성공적으로 추가됨
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: success
+              message:
+                type: string
+                example: 날짜 및 포토부스 장소 정보가 추가되었습니다.
+              temp:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    description: 사진 레코드의 ID
+                  date:
+                    type: string
+                    format: date
+                    description: 업데이트된 날짜
+                  photobooth_id:
+                    type: integer
+                    description: 업데이트된 포토부스 ID
+    '500':
+      description: 서버 에러로 인해 날짜 및 포토부스 정보 업데이트 실패
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: fail
+              message:
+                type: string
+                example: 이미지 업로드에 실패했습니다.
