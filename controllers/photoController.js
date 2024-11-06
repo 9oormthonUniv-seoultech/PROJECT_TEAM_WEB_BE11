@@ -101,11 +101,10 @@ const deletePhoto = async (req, res) => {
 
 const getPhoto =  async (req, res) => {
     try {
-      const { user_id, photo_id } = req.params;
+      const {photo_id} = req.params;
 
       const photo = await Photo.findOne({
         where: {
-          user_id: user_id,
           id: photo_id,
         },
         include: [

@@ -21,6 +21,6 @@ router.post('/save/:photoTemp_id', savePhoto);
 router.delete('/delete/:photo_id', deletePhoto);
 
 // 사진 조회용 라우트
-router.get('/:user_id/:photo_id', getPhoto);
+router.get('/:photo_id', getPhoto);
 
 module.exports = router;
