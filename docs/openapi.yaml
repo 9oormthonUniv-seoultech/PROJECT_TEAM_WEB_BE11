@@ -4,7 +4,7 @@ info:
   description: pocket4cut web1팀의 API 문서입니다
   version: 0.1.9
 servers:
-  - url: http://localhost:3000
+  - url: https://port-0-langbot-backend-m22m0z85debbab55.sel4.cloudtype.app
     description: pocket4cut
 paths:
   /api/user/{user_id}:

@@ -4,11 +4,13 @@ info:
   description: pocket4cut web1팀의 API 문서입니다
   version: 0.1.9
 servers:
-  - url: 'http://localhost:3000/'
+  - url: 'https://port-0-langbot-backend-m22m0z85debbab55.sel4.cloudtype.app'
     description: pocket4cut
 paths:
   '/api/user/{user_id}':
     get:
+      tags:
+        - User
       summary: Get user by ID
       description: 유저 ID를 통해 유저 정보를 조회합니다.
       parameters:
@@ -34,6 +36,8 @@ paths:
                     type: string
                   profileImage:
                     type: string
+                    example: 'https://pocket-bucket.s3.ap-northeast-2.amazonaws.com/defaultProfileImage.jpg'
+                    description: 사용자의 프로필사진이 없을 때(null)는 기본이미지url 반환
         '404':
           description: 유저를 찾을 수 없음
           content:
@@ -54,7 +58,9 @@ paths:
                   message:
                     type: string
                     example: 유저 조회 실패
-    post:
+    put:
+      tags:
+        - User
       summary: Update user information
       description: 유저 정보를 수정합니다.
       parameters:
@@ -67,7 +73,7 @@ paths:
       requestBody:
         required: true
         content:
-          application/json:
+          multipart/form-data:
             schema:
               type: object
               properties:
@@ -75,8 +81,9 @@ paths:
                   type: string
                 email:
                   type: string
-                profileImage:
-                  type: string
+                files:
+                  type: array
+                  format: binary
       responses:
         '200':
           description: 유저 정보 업데이트 성공
@@ -93,6 +100,7 @@ paths:
                     type: string
                   profileImage:
                     type: string
+                    description: 사용자가 프로필이미지를 삭제하면 null 반환
         '404':
           description: 유저를 찾을 수 없음
           content:
@@ -113,7 +121,19 @@ paths:
                   message:
                     type: string
                     example: 유저 업데이트 실패
+        '502':
+          description: 기존 이미지 삭제 실패
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 기존 이미지 삭제 실패
     delete:
+      tags:
+        - User
       summary: Delete user
       description: 회원 탈퇴
       parameters:
@@ -146,8 +166,10 @@ paths:
                   message:
                     type: string
                     example: 유저 삭제 실패
-  '/api/review/{user_id}':
+  '/api/review/user/{user_id}':
     post:
+      tags:
+        - Review
       summary: Create a new review
       description: 포토부스에 대한 리뷰를 작성합니다.
       parameters:
@@ -160,34 +182,388 @@ paths:
       requestBody:
         required: true
         content:
-          application/json:
+          multipart/form-data:
             schema:
               type: object
               properties:
+                photobooth_name:
+                  type: string
+                  description: 포토부스 이름
+                  example: 포토이즘박스 서울 숭실대점
+                rating:
+                  type: integer
+                  description: 평점
+                  example: 4
                 booth_keyword:
                   type: array
                   items:
                     type: string
+                  description: '포토부스 관련 키워드(사용자 선택값, 띄어쓰기없이)'
                   example:
-                    - 넓은 부스 공간
-                    - 청결한 부스
+                    - 넓은부스공간
+                    - 청결한부스
                 photo_keyword:
                   type: array
                   items:
                     type: string
+                  description: '사진 관련 키워드(사용자 선택값, 띄어쓰기없이)'
                   example:
-                    - 빛번짐 없음
-                    - 선명한 화질
-                image_url:
+                    - 빛번짐없음
+                    - 선명한화질
+                content:
+                  type: string
+                  description: 리뷰 내용
+                  example: 청결하고 넓어요. 사진이 예쁘게 나옵니다
+                date:
+                  type: string
+                  format: date
+                  description: 리뷰작성 날짜
+                  example: '2023-09-25'
+                files:
                   type: array
+                  description: 이미지가 없으면 null값
                   items:
                     type: string
                   example:
                     - 'https://example.com/image1.jpg'
                     - 'https://example.com/image2.jpg'
+    responses:
+      '201':
+        description: 리뷰 작성 성공
+  '/api/review/mypage/{user_id}':
+    get:
+      tags:
+        - Review
+      summary: Get recent reviews for a user
+      description: 마이페이지에서 사용자의 최근 리뷰를 가져옵니다. limit 파라미터를 통해 가져올 리뷰의 개수 제한 가능(더보기 이전 2개)
+      parameters:
+        - in: path
+          name: user_id
+          required: true
+          schema:
+            type: integer
+          description: 사용자의 ID
+        - in: query
+          name: limit
+          required: false
+          schema:
+            type: integer
+          description: 가져올 리뷰의 개수 제한. 기본값은 전체 리뷰입니다.
       responses:
-        '201':
-          description: 리뷰 작성 성공
+        '200':
+          description: 리뷰 가져오기 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  reviewNum:
+                    type: integer
+                    description: 전체 리뷰 수
+                    example: 3
+                  recent_reviews:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        review_id:
+                          type: integer
+                          description: 리뷰 ID
+                          example: 1
+                        date:
+                          type: string
+                          format: date-time
+                          description: 리뷰 작성 날짜
+                          example: '2024-10-03T10:00:00Z'
+                        photobooth_name:
+                          type: string
+                          description: 포토부스 이름
+                          example: 포토이즘박스 공릉점
+                        rating:
+                          type: integer
+                          description: 사용자가 매긴 평점
+                          example: 5
+                        image:
+                          type: string
+                          description: 이미지 URL
+                          example: 'https://example.com/image.jpg'
+                    nullable: true
+        '500':
+          description: 리뷰를 가져오는 중 오류가 발생했습니다.
+  '/api/review/{review_id}':
+    delete:
+      tags:
+        - Review
+      summary: Delete a review
+      description: 특정 리뷰를 삭제합니다.
+      parameters:
+        - in: path
+          name: review_id
+          required: true
+          schema:
+            type: integer
+          description: 삭제할 리뷰의 ID
+      responses:
+        '200':
+          description: 리뷰 삭제 성공
+        '404':
+          description: 리뷰를 찾을 수 없습니다.
+        '500':
+          description: 리뷰 삭제에 실패했습니다.
+    get:
+      tags:
+        - Review
+      summary: Get review details
+      description: 특정 리뷰의 상세 정보를 조회합니다.
+      parameters:
+        - in: path
+          name: review_id
+          required: true
+          schema:
+            type: integer
+          description: 조회할 리뷰의 ID
+      responses:
+        '200':
+          description: 리뷰 상세정보 조회 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    description: 리뷰 ID
+                  user_id:
+                    type: integer
+                    description: 작성자 ID
+                  photobooth_id:
+                    type: integer
+                    description: 포토부스 ID
+                  rating:
+                    type: integer
+                    description: 평점
+                  booth_keyword:
+                    type: array
+                    items:
+                      type: string
+                    description: 포토부스 관련 키워드
+                  photo_keyword:
+                    type: array
+                    items:
+                      type: string
+                    description: 사진 관련 키워드
+                  content:
+                    type: string
+                    description: 리뷰 내용
+                  image_url:
+                    type: string
+                    description: 이미지 URL
+                  date:
+                    type: string
+                    format: date-time
+                    description: 리뷰 작성 날짜
+                  Photobooth:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                        description: 포토부스 이름
+                      brand:
+                        type: string
+                        description: 포토부스 브랜드
+                      rating:
+                        type: number
+                        description: 포토부스 평균 평점
+        '404':
+          description: 리뷰를 찾을 수 없습니다.
+        '500':
+          description: 리뷰를 조회하는 중 오류가 발생했습니다.
+  '/api/review/booth/{photobooth_id}':
+    get:
+      tags:
+        - Review
+      summary: Get reviews for a photobooth
+      description: '해당 포토부스의 최신 리뷰 10개, 키워드 통계 가져옴'
+      parameters:
+        - in: path
+          name: photobooth_id
+          required: true
+          schema:
+            type: integer
+          description: 포토부스의 ID
+      responses:
+        '200':
+          description: 리뷰 가져오기 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  reviews:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        review_id:
+                          type: integer
+                          description: 리뷰 ID
+                          example: 1
+                        date:
+                          type: string
+                          format: date-time
+                          description: 리뷰 작성 날짜
+                          example: '2024-10-03T10:00:00Z'
+                        photobooth_name:
+                          type: string
+                          description: 포토부스 이름
+                          example: 포토이즘박스 공릉점
+                        rating:
+                          type: integer
+                          description: 사용자가 매긴 평점
+                          example: 5
+                        user:
+                          type: object
+                          properties:
+                            name:
+                              type: string
+                              description: 사용자 이름
+                              example: 홍길동
+                            profileImage:
+                              type: string
+                              description: 사용자 프로필 이미지 URL
+                              example: 'https://pocket-bucket.s3.ap-northeast-2.amazonaws.com/defaultProfileImage.jpg'
+                        booth_keyword:
+                          type: object
+                          properties:
+                            keyword:
+                              type: string
+                              description: 부스 키워드
+                              example: 깔끔한소품
+                            count:
+                              type: integer
+                              description: 해당 리뷰에서 사용자가 등록한 부스 키워드 개수
+                              example: 12
+                          nullable: true
+                        photo_keyword:
+                          type: object
+                          properties:
+                            keyword:
+                              type: string
+                              description: 촬영 스타일 키워드
+                              example: 선명한화질
+                            count:
+                              type: integer
+                              description: 해당 리뷰에서 사용자가 등록한 촬영스타일 키워드 개수
+                              example: 8
+                          nullable: true
+                        content:
+                          type: string
+                          description: 리뷰 내용
+                          example: 부스가 깔끔하고 친절했어요.
+                        image:
+                          type: string
+                          description: 첫 번째 이미지 URL
+                          example: 'https://example.com/image1.jpg'
+                          nullable: true
+                        imageCount:
+                          type: integer
+                          description: 리뷰에 첨부된 이미지 수
+                          example: 3
+                  photoKeywordsTotalCount:
+                    type: integer
+                    description: 촬영 스타일 키워드 총 카운트 (모든 관련 키워드의 총 카운트 합계)
+                    example: 20
+                  boothKeywordsTotalCount:
+                    type: integer
+                    description: 부스 키워드 총 카운트 (모든 관련 키워드의 총 카운트 합계)
+                    example: 15
+                  photoKeywords:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        keyword:
+                          type: string
+                          description: 촬영 스타일 키워드 전체
+                          example: 자연스러운보정
+                        count:
+                          type: integer
+                          description: 포토부스에서 해당 촬영스타일키워드가 전체 몇 번 등록되었는지
+                          example: 8
+                  boothKeywords:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        keyword:
+                          type: string
+                          description: 부스 키워드 전체
+                          example: 좋은파우더룸
+                        count:
+                          type: integer
+                          description: 포토부스에서 해당 부스키워드가 전체 몇 번 등록되었는지
+                          example: 10
+        '500':
+          description: 리뷰를 가져오는 중 오류가 발생했습니다.
+  '/api/review/boothphoto/{photobooth_id}':
+    get:
+      tags:
+        - Review
+      summary: Get photobooth rating and review photos
+      description: '해당 포토부스의 평점과 각 리뷰의 첫 번째 사진, 전체 사진 개수를 가져옴'
+      parameters:
+        - in: path
+          name: photobooth_id
+          required: true
+          schema:
+            type: integer
+          description: 포토부스의 ID
+      responses:
+        '200':
+          description: 데이터 가져오기 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  rating:
+                    type: number
+                    format: float
+                    description: 포토부스의 평균 평점
+                    example: 4.3
+                  reviewPhotos:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        Image:
+                          type: string
+                          description: 각 리뷰의 첫 번째 이미지 URL
+                          example: 'https://amazonaws.com/pocket-imagetest2.jpg'
+                  totalImageCount:
+                    type: integer
+                    description: 해당 포토부스의 모든 리뷰 사진 총 개수
+                    example: 4
+        '404':
+          description: 포토부스를 찾을 수 없습니다.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 해당 부스를 찾을 수 없습니다.
+        '500':
+          description: 데이터 조회에 실패했습니다.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 데이터 조회에 실패했습니다.
   /api/map:
     get:
       summary: Get photobooths near the current location
