@@ -1,0 +1,9 @@
+get:
+  tags:
+    - Auth
+  summary: 카카오 로그인
+  description: 카카오톡 계정을 사용하여 로그인 요청을 시작
+  operationId: loginWithKakao
+  responses:
+    '302':
+      description: 카카오 로그인 페이지로 리다이렉트

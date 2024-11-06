@@ -1,0 +1,20 @@
+get:
+  tags:
+    - Auth
+  summary: 카카오 로그인 콜백
+  description: 카카오톡 로그인 성공 후 콜백 URL로 리다이렉트되어 JWT 토큰을 반환
+  operationId: kakaoCallback
+  parameters:
+    - name: accessToken
+      in: query
+      required: true
+      description: JWT 토큰이 포함된 쿼리 매개변수
+      schema:
+        type: string
+  responses:
+    '302':
+      description: 로그인 성공 시 지정된 클라이언트 페이지로 리다이렉트되며 JWT 토큰이 쿼리 매개변수로 포함됨
+    '401':
+      description: 로그인 실패 시 홈 경로로 리다이렉트
+    '500':
+      description: 서버 에러 발생 시 로그인 실패

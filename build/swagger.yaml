@@ -1446,3 +1446,4 @@ paths:
                 properties:
                   message:
                     type: string
+                    example: 검색 과정 중 오류가 발생했습니다.

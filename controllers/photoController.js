@@ -178,7 +178,7 @@ const getBooth = async(req, res) => {
         res.status(200).json(results);
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: '데이터베이스 오류가 발생했습니다.' });
+        res.status(500).json({ message: '검색 과정 중 오류가 발생했습니다.' });
     }
 };
 

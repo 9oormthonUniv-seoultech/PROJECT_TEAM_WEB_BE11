@@ -1,0 +1,11 @@
+get:
+  tags:
+    - Auth
+  summary: 로그아웃
+  description: 현재 로그인된 세션을 종료하고 쿠키를 삭제하여 로그아웃
+  operationId: logout
+  responses:
+    '302':
+      description: 로그아웃 성공 시 홈 경로로 리다이렉트됨
+    '500':
+      description: 서버 에러로 로그아웃 실패
