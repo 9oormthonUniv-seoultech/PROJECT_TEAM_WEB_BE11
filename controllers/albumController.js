@@ -2,7 +2,7 @@ const Photo = require('../models/photo');
 const Photobooth = require('../models/photobooth');
 const { Sequelize, Op, fn, col } = require('sequelize');
 
-const getPhoto = async (req, res) => {
+const getAlbum = async (req, res) => {
     try {
       const user_id = req.params.user_id;
       const date = req.query.date ? new Date(req.query.date) : null; 
@@ -81,4 +81,4 @@ const getPhoto = async (req, res) => {
     }
   };
 
-  module.exports = {getPhoto}
+  module.exports = {getAlbum}

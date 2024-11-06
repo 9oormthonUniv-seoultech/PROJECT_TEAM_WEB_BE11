@@ -99,4 +99,51 @@ const deletePhoto = async (req, res) => {
     }
 };
 
-module.exports = { createTemp, updateInfo, updateRecord, savePhoto, deletePhoto };
+const getPhoto =  async (req, res) => {
+    try {
+      const { user_id, photo_id } = req.params;
+
+      const photo = await Photo.findOne({
+        where: {
+          user_id: user_id,
+          id: photo_id,
+        },
+        include: [
+          {
+            model: Photobooth,
+            attributes: ['name'],
+          },
+        ],
+        attributes: [
+          'date',
+          'image_url',
+          'record',
+          'hashtag_1',
+          'hashtag_2',
+          'hashtag_3',
+          'photo_like',
+        ],
+      });
+  
+      // 사진이 없는 경우
+      if (!photo) {
+        return res.status(404).json({ message: '사진을 찾을 수 없습니다.' });
+      }
+  
+      const response = {
+        date: photo.date,
+        photobooth_name: photo.Photobooth ? photo.Photobooth.name : null,
+        hashtags: [photo.hashtag_1, photo.hashtag_2, photo.hashtag_3].filter(Boolean), // 빈 해시태그는 제외
+        image_url: photo.image_url,
+        record: photo.record,
+        photo_like : photo.photo_like,
+      };
+  
+      return res.status(200).json(response);
+    } catch (error) {
+      console.error('Error photo details', error);
+      return res.status(500).json({ error: 'Internal Server Error' });
+    }
+  };
+
+module.exports = { createTemp, updateInfo, updateRecord, savePhoto, deletePhoto, getPhoto };
