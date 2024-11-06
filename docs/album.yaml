@@ -10,7 +10,6 @@ get:
       schema:
         type: integer
       description: "사용자의 ID"
-
     - in: query
       name: date
       required: false
@@ -19,7 +18,6 @@ get:
         format: date
         example: "2024-11"
       description: "조회할 사진의 연도와 월 (YYYY-MM 형식)"
-
     - in: query
       name: brand
       required: false
@@ -27,7 +25,6 @@ get:
         type: string
         example: "하루필름"
       description: "필터링할 포토부스 브랜드명"
-
     - in: query
       name: location
       required: false
@@ -35,7 +32,6 @@ get:
         type: boolean
         example: true
       description: "사용자 현재 위치를 기반으로 필터링 여부 (true: 현재 위치 기반)"
-
     - in: query
       name: hashtag
       required: false
@@ -43,7 +39,6 @@ get:
         type: string
         example: "여행"
       description: "해시태그를 통해 필터링 (부분 일치 가능)"
-
   responses:
     200:
       description: "필터링된 사진 목록을 반환합니다."

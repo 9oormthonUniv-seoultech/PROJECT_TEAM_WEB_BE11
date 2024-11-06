@@ -10,7 +10,6 @@ post:
       schema:
         type: integer
       description: "즐겨찾기 상태를 변경할 사진의 ID"
-
   responses:
     200:
       description: "즐겨찾기 상태가 성공적으로 업데이트되었습니다."

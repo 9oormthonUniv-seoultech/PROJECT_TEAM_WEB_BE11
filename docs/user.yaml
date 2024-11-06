@@ -48,8 +48,6 @@ get:
               message:
                 type: string
                 example: "유저 조회 실패"
-
-
 put:
   tags :
     - User
@@ -123,7 +121,6 @@ put:
               message:
                 type: string
                 example: "기존 이미지 삭제 실패"
-
 delete:
   tags:
     - User
