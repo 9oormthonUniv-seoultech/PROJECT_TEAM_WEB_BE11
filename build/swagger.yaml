@@ -745,3 +745,520 @@ paths:
                     example: 검색어를 입력하세요.
         '500':
           description: Internal server error.
+  /api/photo/temp/upload/qr:
+    post:
+      tags:
+        - Photo
+      summary: QR 코드를 통한 사진 업로드
+      description: 'QR 코드로부터 이미지 URL을 가져와 S3에 업로드하고, 해당 URL과 사용자 ID를 데이터베이스의 `photoTemp` 테이블에 저장'
+      operationId: uploadPhotoByQR
+      parameters:
+        - name: url
+          in: query
+          required: true
+          description: 'QR 코드의 URL 지원되는 도메인(`haru8.mx2.co.kr`, `qr.seobuk.kr`)'
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_id:
+                  type: integer
+                  description: 사진을 업로드하는 사용자의 ID
+              required:
+                - user_id
+      responses:
+        '201':
+          description: 성공적으로 사진이 업로드되고 데이터베이스에 저장됨
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  newTemp:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        description: 등록된 사진의 임시 레코드 ID
+                      user_id:
+                        type: integer
+                        description: 사용자의 ID
+                      image_url:
+                        type: string
+                        description: S3에 저장된 사진의 URL
+        '400':
+          description: 만료된 QR 코드 또는 지원되지 않는 도메인의 URL이 전달된 경우
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: fail
+                  message:
+                    type: string
+                    example: 이미 만료된 QR입니다. 또는 지원되지 않는 도메인입니다.
+        '500':
+          description: 서버 에러로 인해 사진 업로드 실패
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 이미지 업로드 중 에러 발생
+                  error:
+                    type: string
+                    description: 에러 메시지
+  /api/photo/temp/upload/img:
+    post:
+      tags:
+        - Photo
+      summary: 갤러리 사진 업로드
+      description: '이미지 파일을 업로드하여 S3에 저장하고, 해당 URL과 사용자 ID를 데이터베이스의 `photoTemp` 테이블에 저장'
+      operationId: uploadPhotoByImage
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: 업로드할 이미지 파일 (최대 크기 5MB)
+                user_id:
+                  type: integer
+                  description: 사진을 업로드하는 사용자의 ID
+              required:
+                - file
+                - user_id
+      responses:
+        '201':
+          description: 성공적으로 사진이 업로드되고 데이터베이스에 저장됨
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  newTemp:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        description: 등록된 사진의 임시 레코드 ID
+                      user_id:
+                        type: integer
+                        description: 사용자의 ID
+                      image_url:
+                        type: string
+                        description: S3에 저장된 사진의 URL
+        '400':
+          description: 파일 업로드 제한 오류 발생 (파일 크기 초과 등)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: 파일 크기 초과 또는 잘못된 요청 형식
+        '500':
+          description: 서버 에러로 인해 사진 업로드 실패
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: fail
+                  message:
+                    type: string
+                    example: 이미지 업로드에 실패했습니다.
+  '/api/photo/temp/{photoTemp_id}/update-info':
+    put:
+      tags:
+        - Photo
+      summary: 날짜와 포토부스 정보 추가
+      description: 임시 사진 레코드에 찍은 날짜와 포토부스 정보를 업데이트
+      operationId: updatePhotoInfo
+      parameters:
+        - name: photoTemp_id
+          in: path
+          required: true
+          description: 업데이트할 사진 레코드의 ID
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                date:
+                  type: string
+                  format: date
+                  description: 사진 찍은 날짜 (YYYY-MM-DD)
+                photobooth_id:
+                  type: integer
+                  description: 사진을 찍은 포토부스의 ID
+              required:
+                - date
+                - photobooth_id
+      responses:
+        '200':
+          description: 날짜 및 포토부스 정보가 성공적으로 추가됨
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: 날짜 및 포토부스 장소 정보가 추가되었습니다.
+                  temp:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        description: 사진 레코드의 ID
+                      date:
+                        type: string
+                        format: date
+                        description: 업데이트된 날짜
+                      photobooth_id:
+                        type: integer
+                        description: 업데이트된 포토부스 ID
+        '500':
+          description: 서버 에러로 인해 날짜 및 포토부스 정보 업데이트 실패
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: fail
+                  message:
+                    type: string
+                    example: 이미지 업로드에 실패했습니다.
+  '/api/photo/temp/{photoTemp_id}/update-record':
+    put:
+      tags:
+        - Photo
+      summary: 해시태그 및 기록 추가
+      description: 임시 사진 레코드에 해시태그와 줄글 기록을 업데이트
+      operationId: updatePhotoRecord
+      parameters:
+        - name: photoTemp_id
+          in: path
+          required: true
+          description: 업데이트할 사진 레코드의 ID
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                hashtag_1:
+                  type: string
+                  description: 첫 번째 해시태그 (최대 10자)
+                hashtag_2:
+                  type: string
+                  description: 두 번째 해시태그 (최대 10자)
+                hashtag_3:
+                  type: string
+                  description: 세 번째 해시태그 (최대 10자)
+                record:
+                  type: string
+                  description: 줄글 기록 내용
+              required:
+                - record
+      responses:
+        '200':
+          description: 해시태그와 기록이 성공적으로 추가됨
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: 해시태그와 기록이 추가되었습니다.
+                  temp:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        description: 사진 레코드의 ID
+                      hashtag_1:
+                        type: string
+                        description: 첫 번째 해시태그
+                      hashtag_2:
+                        type: string
+                        description: 두 번째 해시태그
+                      hashtag_3:
+                        type: string
+                        description: 세 번째 해시태그
+                      record:
+                        type: string
+                        description: 줄글 기록 내용
+        '500':
+          description: 서버 에러로 인해 해시태그 및 기록 업데이트 실패
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: fail
+                  message:
+                    type: string
+                    example: 이미지 업로드에 실패했습니다.
+  '/api/photo/save/{photoTemp_id}':
+    post:
+      tags:
+        - Photo
+      summary: 임시 데이터 최종 저장
+      description: '임시 테이블 `photoTemp`에 있는 데이터를 `photo` 테이블에 저장하고, 임시 레코드 삭제'
+      operationId: saveFinalPhoto
+      parameters:
+        - name: photoTemp_id
+          in: path
+          required: true
+          description: 저장할 임시 사진 레코드의 ID
+          schema:
+            type: integer
+      responses:
+        '201':
+          description: 사진이 성공적으로 저장되고 임시 데이터가 삭제됨
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: 사진이 성공적으로 저장되었습니다!
+                  newPhoto:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        description: 최종 저장된 사진 레코드의 ID
+                      user_id:
+                        type: integer
+                        description: 사용자의 ID
+                      photobooth_id:
+                        type: integer
+                        description: 사진을 찍은 포토부스의 ID
+                      image_url:
+                        type: string
+                        description: 최종 저장된 사진의 URL
+                      date:
+                        type: string
+                        format: date
+                        description: 사진을 찍은 날짜
+                      record:
+                        type: string
+                        description: 줄글 기록 내용
+                      hashtag_1:
+                        type: string
+                        description: 첫 번째 해시태그
+                      hashtag_2:
+                        type: string
+                        description: 두 번째 해시태그
+                      hashtag_3:
+                        type: string
+                        description: 세 번째 해시태그
+        '400':
+          description: 임시 테이블에서 레코드 삭제 실패
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: fail
+                  message:
+                    type: string
+                    example: Temp 삭제에 실패했습니다.
+        '500':
+          description: 서버 에러로 인해 최종 사진 저장 실패
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: fail
+                  message:
+                    type: string
+                    example: 이미지 저장에 실패했습니다.
+  '/api/photo/delete/{photo_id}':
+    delete:
+      tags:
+        - Photo
+      summary: 사진 삭제
+      description: 지정된 ID의 사진을 S3에서 삭제하고 데이터베이스의 `photo` 테이블에서 제거
+      operationId: deletePhoto
+      parameters:
+        - name: photo_id
+          in: path
+          required: true
+          description: 삭제할 사진 레코드의 ID
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: 사진이 성공적으로 삭제됨 (콘텐츠 없음)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 이미지를 삭제했습니다.
+        '500':
+          description: 서버 에러로 인해 사진 삭제 실패
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 이미지 삭제에 실패했습니다.
+  '/api/photo/share/{photo_id}':
+    get:
+      tags:
+        - Photo
+      summary: 사진 공유 링크 가져오기
+      description: 지정된 ID의 사진에 대한 공유 링크를 반환
+      operationId: getSharePhotoLink
+      parameters:
+        - name: photo_id
+          in: path
+          required: true
+          description: 공유할 사진 레코드의 ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 사진의 공유 링크가 성공적으로 반환됨
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  shareLink:
+                    type: string
+                    description: 공유 링크 (S3에 저장된 사진의 URL)
+                    example: 'https://example-bucket.s3.amazonaws.com/photo.jpg'
+        '404':
+          description: 해당 ID의 사진을 찾을 수 없음
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: fail
+                  message:
+                    type: string
+                    example: 사진을 찾을 수 없습니다.
+        '500':
+          description: 서버 에러로 인해 공유 링크 생성 실패
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: fail
+                  message:
+                    type: string
+                    example: 공유 링크 생성 실패
+  /api/photo/temp/update-info:
+    get:
+      summary: 포토부스 지점 검색
+      description: 검색어를 입력하여 포토부스 이름과 ID를 조회합니다.
+      parameters:
+        - name: searchTerm
+          in: query
+          required: true
+          description: 검색어 (포토부스 이름의 일부)
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 검색된 포토부스 목록
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      description: 포토부스 ID
+                    name:
+                      type: string
+                      description: 포토부스 이름
+        '400':
+          description: 검색어가 제공되지 않았거나 유효하지 않음
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 검색어가 필요합니다.
+        '500':
+          description: 서버 오류
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string

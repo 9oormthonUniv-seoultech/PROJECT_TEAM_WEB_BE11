@@ -1,0 +1,69 @@
+post:
+  tags:
+    - Photo
+  summary: 갤러리 사진 업로드
+  description: 이미지 파일을 업로드하여 S3에 저장하고, 해당 URL과 사용자 ID를 데이터베이스의 `photoTemp` 테이블에 저장
+  operationId: uploadPhotoByImage
+  requestBody:
+    required: true
+    content:
+      multipart/form-data:
+        schema:
+          type: object
+          properties:
+            file:
+              type: string
+              format: binary
+              description: 업로드할 이미지 파일 (최대 크기 5MB)
+            user_id:
+              type: integer
+              description: 사진을 업로드하는 사용자의 ID
+          required:
+            - file
+            - user_id
+  responses:
+    '201':
+      description: 성공적으로 사진이 업로드되고 데이터베이스에 저장됨
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: success
+              newTemp:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    description: 등록된 사진의 임시 레코드 ID
+                  user_id:
+                    type: integer
+                    description: 사용자의 ID
+                  image_url:
+                    type: string
+                    description: S3에 저장된 사진의 URL
+    '400':
+      description: 파일 업로드 제한 오류 발생 (파일 크기 초과 등)
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: 파일 크기 초과 또는 잘못된 요청 형식
+    '500':
+      description: 서버 에러로 인해 사진 업로드 실패
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: fail
+              message:
+                type: string
+                example: 이미지 업로드에 실패했습니다.

@@ -23,3 +23,19 @@ paths:
     $ref: './map.yaml'
   /api/map/search:
     $ref: './map-search.yaml'
+  /api/photo/temp/upload/qr:
+    $ref: './photo-qr.yaml'
+  /api/photo/temp/upload/img:
+    $ref: './photo-img.yaml'
+  /api/photo/temp/{photoTemp_id}/update-info:
+    $ref: './photo-info.yaml'
+  /api/photo/temp/{photoTemp_id}/update-record:
+    $ref: './photo-record.yaml'
+  /api/photo/save/{photoTemp_id}:
+    $ref: './photo-save.yaml'
+  /api/photo/delete/{photo_id}:
+    $ref: './photo-delete.yaml'
+  /api/photo/share/{photo_id}:
+    $ref: './photo-share.yaml'
+  /api/photo/temp/update-info:
+    $ref: './photo-searchBooth.yaml'
