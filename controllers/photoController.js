@@ -4,7 +4,8 @@ const User = require('../models/user');
 const Photobooth = require('../models/photobooth');
 const { deleteTemp } = require('../middlewares/uploadPhoto');
 const { deleteImages } = require('../middlewares/s3');
-const { Op } = require('sequelize');
+const { Sequelize, Op } = require('sequelize');
+
 
 const createTemp = async (req, res) => {
     try{
@@ -181,4 +182,69 @@ const getBooth = async(req, res) => {
     }
 };
 
-module.exports = { createTemp, updateInfo, updateRecord, savePhoto, deletePhoto, getPhoto, sharePhoto, getBooth };
+// 사용자가 방문한 부스 get
+const getBoothVisit = async (req, res) => {
+  try {
+    const { user_id } = req.params;
+
+    const oneMonthAgo = new Date();
+    oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+
+    const photos = await Photo.findAll({
+      where: {
+        user_id: user_id,
+        date: {
+          [Op.gte]: oneMonthAgo, // 한 달 이내의 날짜만 포함
+        },
+      },
+      include: [
+        {
+          model: Photobooth,
+          attributes: ['name'], 
+        },
+      ],
+      attributes: ['date'],
+      order: [['date', 'DESC']],
+    });
+
+    // 사진이 없는 경우
+    if (!photos || photos.length === 0) {
+      return res.status(404).json({ status: 'fail', message: '방문한 부스가 없습니다.' });
+    }
+
+    const response = photos.map((photo) => ({
+      date: photo.date,
+      photobooth_name: photo.Photobooth ? photo.Photobooth.name : null,
+    }));
+
+    return res.status(200).json(response);
+  } catch (error) {
+    console.error('getBoothVisit Error', error);
+    return res.status(500).json({ status: 'fail', message: '방문한 부스 찾기 실패' });
+  }
+};
+
+
+// 사진 즐겨찾기
+const photoLike = async (req, res) => {
+  try {
+    const { photo_id } = req.params;
+
+    const photo = await Photo.findByPk(photo_id);
+    if (!photo) {
+      return res.status(404).json({ status: 'fail', message: '사진을 찾을 수 없습니다.'});
+    }
+
+    // photo_like 값 반대로 변경
+    photo.photo_like = !photo.photo_like;
+    await photo.save();
+
+    return res.status(200).json({ status: 'success', message: "즐겨찾기 업데이트 성공"});
+  } catch (error) {
+    console.error('photoLike Error', error);
+    res.status(500).json({ status: 'fail', message: "즐겨찾기 업데이트 실패"});
+  }
+};
+
+module.exports = { createTemp, updateInfo, updateRecord, savePhoto, deletePhoto, getPhoto, sharePhoto , getBooth, getBoothVisit, photoLike };
+
