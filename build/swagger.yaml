@@ -662,7 +662,7 @@ paths:
       tags:
         - Review
       summary: Get photobooth rating and review photos
-      description: '해당 포토부스의 평점과 각 리뷰의 첫 번째 사진, 전체 사진 개수를 가져옴'
+      description: '해당 포토부스의 평점과 각 리뷰의 최대 4개의 이미지, 전체 사진 개수를 가져옴'
       parameters:
         - in: path
           name: photobooth_id
@@ -686,16 +686,13 @@ paths:
                   reviewPhotos:
                     type: array
                     items:
-                      type: object
-                      properties:
-                        Image:
-                          type: string
-                          description: 각 리뷰의 첫 번째 이미지 URL
-                          example: 'https://amazonaws.com/pocket-imagetest2.jpg'
+                      type: string
+                      description: 리뷰에서 최대 4개의 이미지 URL
+                      example: 'https://amazonaws.com/pocket-imagetest2.jpg'
                   totalImageCount:
                     type: integer
                     description: 해당 포토부스의 모든 리뷰 사진 총 개수
-                    example: 4
+                    example: 10
         '404':
           description: 포토부스를 찾을 수 없습니다.
           content:
@@ -1772,6 +1769,7 @@ paths:
                   message:
                     type: string
                     example: 즐겨찾기 해제에 실패했습니다.
+  '/api/booth/{photobooth_id}':
     get:
       tags:
         - Booth
@@ -1838,5 +1836,63 @@ paths:
                   message:
                     type: string
                     example: 부스 정보를 가져오는 데 실패했습니다.
-  '/api/booth/{photobooth_id}':
-    $ref: '#/paths/~1api~1booth~1'
+  '/api/booth/location/{phtobooth_id}':
+    get:
+      tags:
+        - Booth
+      summary: 포토부스 위치 정보 조회
+      description: '포토부스 ID를 통해 해당 부스의 이름, 위도, 경도, 평점을 조회합니다.'
+      parameters:
+        - in: path
+          name: photobooth_id
+          required: true
+          schema:
+            type: integer
+          description: 조회할 포토부스의 ID
+      responses:
+        '200':
+          description: 포토부스 위치 정보 조회 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  booth_name:
+                    type: string
+                    description: 포토부스 이름
+                    example: 인생네컷 홍대점
+                  latitude:
+                    type: number
+                    format: float
+                    description: 포토부스의 위도
+                    example: 37.5665
+                  longitude:
+                    type: number
+                    format: float
+                    description: 포토부스의 경도
+                    example: 126.978
+                  rating:
+                    type: number
+                    format: float
+                    description: 포토부스의 평점
+                    example: 4.5
+        '404':
+          description: 해당 ID의 포토부스를 찾을 수 없는 경우
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 해당 포토부스를 찾을 수 없습니다.
+        '500':
+          description: 서버 오류 발생 시
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 포토부스 정보를 가져오는 데 실패했습니다.
