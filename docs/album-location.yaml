@@ -1,0 +1,89 @@
+get:
+  summary: 특정 위치 기반으로 반경 1km 내의 포토부스에서 촬영된 사진 조회
+  description: 사용자 ID에 따라 포토부스 반경 1km 내에서 촬영된 사진들을 조회하고 검색어를 통해 위치 기반 검색을 수행합니다.
+  parameters:
+    - name: user_id
+      in: path
+      required: true
+      schema:
+        type: string
+      description: 조회할 사용자의 ID
+    - name: latitude
+      in: query
+      required: false
+      schema:
+        type: string
+        default: "37.6329741"
+      description: 조회할 위치의 위도 (기본값 제공)
+    - name: longitude
+      in: query
+      required: false
+      schema:
+        type: string
+        default: "127.0798802"
+      description: 조회할 위치의 경도 (기본값 제공)
+    - name: searchTerm
+      in: query
+      required: false
+      schema:
+        type: string
+      description: 카카오 API를 이용한 위치 검색어. 위치가 검색되면 위도와 경도를 자동으로 설정
+
+  responses:
+    '200':
+      description: 검색된 반경 내 포토부스에서 촬영된 사진 데이터 반환
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              photonum:
+                type: integer
+                description: 사진이 없을 경우 0 반환
+              images:
+                type: array
+                items:
+                  type: string
+                  description: 사진 URL
+              photo_like:
+                type: integer
+                description: 각 사진에 대한 좋아요 수
+              photo_id:
+                type: integer
+                description: 각 사진의 고유 ID
+          examples:
+            no_photos:
+              summary: 사진 없음
+              value:
+                photonum: 0
+            with_photos:
+              summary: 사진 있음
+              value:
+                - images: "https://example.com/photo1.jpg"
+                  photo_like: 42
+                  photo_id: 1
+                - images: "https://example.com/photo2.jpg"
+                  photo_like: 35
+                  photo_id: 2
+
+    '404':
+      description: 검색어 위치를 찾을 수 없음
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: 검색어의 위치를 찾을 수 없습니다.
+
+    '500':
+      description: 서버 오류
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: Internal Server Error

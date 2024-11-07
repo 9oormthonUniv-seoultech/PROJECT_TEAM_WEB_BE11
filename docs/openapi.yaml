@@ -29,6 +29,8 @@ paths:
     $ref: './map-search.yaml'
   /api/album/{user_id}:
     $ref: './album.yaml'
+  /api/album/{user_id}/location:
+    $ref: './album-location.yaml'
   /api/photo/like/{photo_id}:
     $ref: './photo-like.yaml'
   /api/photo/toggleLike/{photo_id}:

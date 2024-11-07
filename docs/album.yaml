@@ -26,13 +26,6 @@ get:
         example: "하루필름"
       description: "필터링할 포토부스 브랜드명"
     - in: query
-      name: location
-      required: false
-      schema:
-        type: boolean
-        example: true
-      description: "사용자 현재 위치를 기반으로 필터링 여부 (true: 현재 위치 기반)"
-    - in: query
       name: hashtag
       required: false
       schema:
