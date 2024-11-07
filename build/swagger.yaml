@@ -1669,3 +1669,106 @@ paths:
                   message:
                     type: string
                     example: 검색 과정 중 오류가 발생했습니다.
+  /api/booth/:
+    post:
+      tags:
+        - Booth
+      summary: 부스 즐겨찾기 등록
+      description: 특정 유저가 포토부스를 즐겨찾기에 등록합니다.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_id:
+                  type: integer
+                  description: 즐겨찾기에 등록할 유저의 ID
+                  example: 1
+                photobooth_id:
+                  type: integer
+                  description: 즐겨찾기에 등록할 포토부스의 ID
+                  example: 101
+      responses:
+        '200':
+          description: 포토부스 즐겨찾기 등록 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 포토부스가 즐겨찾기 되었습니다.
+        '400':
+          description: 존재하지 않는 유저 또는 포토부스
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 존재하지 않는 유저거나 존재하지 않는 부스입니다.
+        '500':
+          description: 서버 오류 발생 시
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 즐겨찾기에 실패했습니다.
+    delete:
+      tags:
+        - Booth
+      summary: 부스 즐겨찾기 해제
+      description: 특정 유저가 포토부스를 즐겨찾기에서 해제합니다.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_id:
+                  type: integer
+                  description: 즐겨찾기에서 해제할 유저의 ID
+                  example: 1
+                photobooth_id:
+                  type: integer
+                  description: 즐겨찾기에서 해제할 포토부스의 ID
+                  example: 101
+      responses:
+        '200':
+          description: 포토부스 즐겨찾기 해제 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 포토부스가 즐겨찾기 해제 되었습니다.
+        '400':
+          description: 존재하지 않는 유저 또는 포토부스
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 존재하지 않는 유저거나 존재하지 않는 부스입니다.
+        '500':
+          description: 서버 오류 발생 시
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 즐겨찾기 해제에 실패했습니다.
