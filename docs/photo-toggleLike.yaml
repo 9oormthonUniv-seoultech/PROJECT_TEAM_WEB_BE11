@@ -1,0 +1,54 @@
+post:
+  tags:
+    - Photo
+  summary: "사진 즐겨찾기 토글"
+  description: "특정 사진의 즐겨찾기 상태를 반대로 변경합니다. 사진이 즐겨찾기에 등록되어 있으면 해제하고, 해제되어 있으면 등록합니다."
+  parameters:
+    - in: path
+      name: photo_id
+      required: true
+      schema:
+        type: integer
+      description: "즐겨찾기 상태를 변경할 사진의 ID"
+  responses:
+    200:
+      description: "즐겨찾기 상태가 성공적으로 업데이트되었습니다."
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              photo_id:
+                type: integer
+                description: "즐겨찾기 상태가 업데이트된 사진의 ID"
+                example: 1
+              photo_like:
+                type: boolean
+                description: "변경된 즐겨찾기 상태"
+                example: true
+    404:
+      description: "해당 ID의 사진이 존재하지 않는 경우"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: "fail"
+              message:
+                type: string
+                example: "사진을 찾을 수 없습니다."
+    500:
+      description: "서버 오류 발생 시"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: "fail"
+              message:
+                type: string
+                example: "즐겨찾기 업데이트 실패"
