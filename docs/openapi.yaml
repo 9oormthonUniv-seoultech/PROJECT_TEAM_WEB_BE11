@@ -51,3 +51,5 @@ paths:
     $ref: './photo-share.yaml'
   /api/photo/temp/update-info:
     $ref: './photo-searchBooth.yaml'
+  /api/booth/:
+    $ref: './booth-like-add-delete.yaml'
