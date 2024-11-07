@@ -1,0 +1,80 @@
+get:
+  tags:
+    - User
+  summary: "유저가 즐겨찾기한 포토부스 조회"
+  description: "특정 유저가 즐겨찾기한 포토부스를 조회합니다. 각 포토부스에 대한 가장 최근 리뷰 사진, 부스 이름, 부스 평점, 가장 많이 사용된 키워드, 유저가 좋아요한 여부를 반환합니다."
+  parameters:
+    - in: path
+      name: user_id
+      required: true
+      schema:
+        type: integer
+      description: "조회할 유저의 ID"
+  responses:
+    200:
+      description: "즐겨찾기한 포토부스 정보 조회 성공"
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                photobooth_id:
+                  type: integer
+                  description: "포토부스 ID"
+                  example: 1
+                photobooth_name:
+                  type: string
+                  description: "포토부스 이름"
+                  example: "인생네컷 홍대점"
+                rating:
+                  type: number
+                  format: float
+                  description: "포토부스 평점"
+                  example: 4.5
+                top_keyword:
+                  type: string
+                  description: "포토부스에서 가장 많이 사용된 키워드"
+                  example: "인생네컷"
+                is_liked_by_user:
+                  type: boolean
+                  description: "유저가 해당 포토부스를 좋아요했는지 여부"
+                  example: true
+                recent_photo:
+                  type: object
+                  nullable: true
+                  description: "포토부스에 대한 가장 최근 리뷰 사진"
+                  properties:
+                    date:
+                      type: string
+                      format: date-time
+                      description: "리뷰 작성 날짜"
+                      example: "2024-11-06T12:34:56Z"
+                    image_url:
+                      type: string
+                      description: "리뷰 사진 URL"
+                      example: "https://example.com/photo.jpg"
+    404:
+      description: "유저 또는 즐겨찾기한 포토부스가 없는 경우"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "즐겨찾기한 포토부스가 없습니다"
+    500:
+      description: "서버 오류"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "즐겨찾는 부스 조회 실패"
+              error:
+                type: object
+                description: "오류 상세 정보"

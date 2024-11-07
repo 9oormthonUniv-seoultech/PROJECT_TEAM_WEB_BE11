@@ -11,6 +11,8 @@ paths:
     $ref: './user.yaml'
   /api/user/{user_id}/booth-visit:
     $ref: './booth-visit.yaml'
+  /api/user/{user_id}/booth-like:
+    $ref: './booth-like.yaml'
   /api/review/user/{user_id}:
     $ref: './review-user.yaml'
   /api/review/mypage/{user_id}:

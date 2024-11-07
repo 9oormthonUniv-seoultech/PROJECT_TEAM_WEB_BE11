@@ -29,6 +29,15 @@ get:
                   type: string
                   description: "방문한 포토부스 이름"
                   example: "하루필름 강남점"
+                photobooth_id:
+                  type: integer
+                  description: "방문한 포토부스의 ID"
+                  example: 123
+                photo_url:
+                  type: string
+                  format: uri
+                  description: "사진 URL"
+                  example: "https://example.com/photo.jpg"
     404:
       description: "최근 한 달 내에 방문한 부스가 없는 경우"
       content:
