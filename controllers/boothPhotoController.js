@@ -1,5 +1,7 @@
 const Review = require('../models/review');
 const Photobooth = require('../models/photobooth');
+const { Keyword, Keyword_list } = require('../models/keyword');
+
 
 // 부스에 대한 rating, 각 리뷰 첫 번째 사진, 부스의 전체 사진 개수 가져오기
 const getBoothPhotos = async (req, res) => {
@@ -49,4 +51,59 @@ const getBoothPhotos = async (req, res) => {
   }
 };
 
-module.exports = { getBoothPhotos };
+const getBoothModal = async (req, res) => {
+  try {
+    const photobooth_id = req.params.photobooth_id;
+
+    const booth = await Photobooth.findByPk(photobooth_id, {
+      attributes: ['rating'],
+    });
+
+    if (!booth) {
+      res.status(404).json({ message: '해당 부스를 찾을 수 없습니다.' });
+    }
+
+    // 부스 리뷰 개수와 첫 번째 이미지, 이미지 개수
+    const reviews = await Review.findAll({
+      where: { photobooth_id: photobooth_id },
+      order: [['date', 'DESC']],
+      attributes: ['image_url'],
+    });
+
+    const reviewCount = reviews.length;
+    const imageCount = reviews.reduce((count, review) => {
+      const images = review.image_url ? JSON.parse(review.image_url) : [];
+      return count + images.length;
+    }, 0);
+    const firstImage = reviews[0]?.image_url ? JSON.parse(reviews[0].image_url)[0] : null;
+
+    // 가장 많이 사용된 키워드 두 개
+    const topKeywords = await Keyword.findAll({
+      where: { photobooth_id: photobooth_id },
+      include: [
+        {
+          model: Keyword_list,
+          as: 'keyword',
+          attributes: ['keyword'],
+        },
+      ],
+      order: [['count', 'DESC']],
+      limit: 2,
+    });
+
+    const topKeywordsList = topKeywords.map(item => item.keyword.keyword);
+
+    res.status(200).json({
+      rating: booth.rating,
+      topHashtag: topKeywordsList,
+      imageCount: imageCount,
+      firstImage: firstImage,
+      reviewCount: reviewCount,
+    });
+  } catch (error) {
+    console.error('부스 상세 정보 조회 중 오류:', error);
+    res.status(500).json({ message: '부스 정보를 가져오는 데 실패했습니다.' });
+  }
+};
+
+module.exports = { getBoothPhotos , getBoothModal };
