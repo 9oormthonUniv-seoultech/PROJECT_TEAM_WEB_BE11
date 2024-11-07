@@ -200,10 +200,10 @@ const getBoothVisit = async (req, res) => {
       include: [
         {
           model: Photobooth,
-          attributes: ['name'], 
+          attributes: ['name', 'id'], 
         },
       ],
-      attributes: ['date'],
+      attributes: ['date', 'image_url'],
       order: [['date', 'DESC']],
     });
 
@@ -215,6 +215,8 @@ const getBoothVisit = async (req, res) => {
     const response = photos.map((photo) => ({
       date: photo.date,
       photobooth_name: photo.Photobooth ? photo.Photobooth.name : null,
+      photobooth_id : photo.Photobooth ? photo.Photobooth.id : null,
+      photo_url : photo.image_url,
     }));
 
     return res.status(200).json(response);
