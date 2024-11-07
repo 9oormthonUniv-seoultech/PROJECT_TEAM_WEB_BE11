@@ -235,8 +235,7 @@ const photoLike = async (req, res) => {
       res.status(404).json({ status: 'fail', message: '사진을 찾을 수 없습니다.'});
     }
 
-    // photo_like 값 반대로 변경
-    photo.photo_like = !photo.photo_like;
+    photo.photo_like = true;
     await photo.save();
 
     return res.status(200).json({
