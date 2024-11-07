@@ -117,8 +117,8 @@ const readBoothLike = async (req, res) => {
                 photobooth_name: booth.name,
                 rating: booth.rating,
                 top_keyword: topKeyword,
-                is_liked_by_user: true,
-                recent_photo: recentPhoto ? {
+                user_like: true,
+                photobooth_image: recentPhoto ? {
                     date: recentPhoto.date,
                     image_url: recentPhoto.image_url
                 } : null
