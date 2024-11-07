@@ -1772,3 +1772,71 @@ paths:
                   message:
                     type: string
                     example: 즐겨찾기 해제에 실패했습니다.
+    get:
+      tags:
+        - Booth
+      summary: 부스 모달창 정보 조회
+      description: '모달창에 들어갈 부스의 평점, 상위 두 개의 키워드, 이미지 개수, 첫 번째 이미지, 리뷰 개수를 반환합니다.'
+      parameters:
+        - in: path
+          name: photobooth_id
+          required: true
+          schema:
+            type: integer
+          description: 조회할 포토부스의 ID
+      responses:
+        '200':
+          description: 부스 모달 정보 조회 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  rating:
+                    type: number
+                    format: float
+                    description: 포토부스 평점
+                    example: 4.3
+                  topHashtag:
+                    type: array
+                    items:
+                      type: string
+                    description: 가장 많이 사용된 상위 두 개의 해시태그
+                    example:
+                      - 인생네컷
+                      - 친구
+                  imageCount:
+                    type: integer
+                    description: 포토부스 리뷰의 전체 이미지 개수
+                    example: 15
+                  firstImage:
+                    type: string
+                    nullable: true
+                    description: 리뷰에서 가장 첫 번째 이미지의 URL
+                    example: 'https://example.com/photo.jpg'
+                  reviewCount:
+                    type: integer
+                    description: 부스 리뷰 개수
+                    example: 5
+        '404':
+          description: 해당 포토부스를 찾을 수 없는 경우
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 해당 부스를 찾을 수 없습니다.
+        '500':
+          description: 서버 오류
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 부스 정보를 가져오는 데 실패했습니다.
+  '/api/booth/{photobooth_id}':
+    $ref: '#/paths/~1api~1booth~1'
