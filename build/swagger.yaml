@@ -932,6 +932,8 @@ paths:
                   message:
                     type: string
                     example: 즐겨찾기 업데이트 실패
+  '/api/photo/toggleLike/{photo_id}':
+    $ref: '#/paths/~1api~1photo~1like~1%7Bphoto_id%7D'
   '/api/photo/{photo_id}':
     get:
       tags:
