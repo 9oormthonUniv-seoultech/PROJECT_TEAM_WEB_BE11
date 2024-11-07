@@ -4,10 +4,12 @@ const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const passport = require('passport');
 const app = express();
+const cors = require('cors');
 
 require('dotenv').config();
 const port = process.env.PORT;
 
+app.use(cors());
 app.use(express.json());
 
 // db 관련 설정
@@ -48,7 +50,6 @@ const authRouter = require('./routes/auth');
 app.use('/auth', authRouter);
 
 const reviewRouter = require('./routes/reviewRoutes');
-console.log("reviewRoutes loaded 1");
 app.use('/api/review', reviewRouter);
 
 const userRouter = require('./routes/userRoutes');
