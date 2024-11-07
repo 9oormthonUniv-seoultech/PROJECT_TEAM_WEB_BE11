@@ -225,7 +225,7 @@ const getBoothVisit = async (req, res) => {
 };
 
 
-// 사진 즐겨찾기
+// 사진 무조건 즐겨찾기
 const photoLike = async (req, res) => {
   try {
     const { photo_id } = req.params;
@@ -249,5 +249,30 @@ const photoLike = async (req, res) => {
   }
 };
 
-module.exports = { createTemp, updateInfo, updateRecord, savePhoto, deletePhoto, getPhoto, sharePhoto , getBooth, getBoothVisit, photoLike };
+
+// 사진 즐겨찾기
+const photoToggleLike = async (req, res) => {
+  try {
+    const { photo_id } = req.params;
+
+    const photo = await Photo.findByPk(photo_id);
+    if (!photo) {
+      res.status(404).json({ status: 'fail', message: '사진을 찾을 수 없습니다.'});
+    }
+
+    photo.photo_like = !photo.photo_like;
+    await photo.save();
+
+    return res.status(200).json({
+        photo_id: photo.id,
+        photo_like: photo.photo_like,
+      },
+    );
+  } catch (error) {
+    console.error('photoLike Error', error);
+    res.status(500).json({ status: 'fail', message: "즐겨찾기 업데이트 실패"});
+  }
+};
+
+module.exports = { createTemp, updateInfo, updateRecord, savePhoto, deletePhoto, getPhoto, sharePhoto , getBooth, getBoothVisit, photoLike , photoToggleLike};
 
