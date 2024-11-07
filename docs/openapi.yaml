@@ -54,4 +54,6 @@ paths:
   /api/booth/:
     $ref: './booth-like-add-delete.yaml'
   /api/booth/{photobooth_id}:
-    $ref: './booth-like-add-delete.yaml'
+    $ref: './booth-modal.yaml'
+  /api/booth/location/{phtobooth_id}:
+    $ref: './booth-location.yaml'
