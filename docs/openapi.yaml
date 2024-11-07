@@ -30,7 +30,7 @@ paths:
   /api/photo/like/{photo_id}:
     $ref: './photo-like.yaml'
   /api/photo/toggleLike/{photo_id}:
-    $ref: './photo-like.yaml'
+    $ref: './photo-togglelike.yaml'
   /api/photo/{photo_id}:
       $ref: './get-photo.yaml'
   /api/photo/temp/upload/qr:
