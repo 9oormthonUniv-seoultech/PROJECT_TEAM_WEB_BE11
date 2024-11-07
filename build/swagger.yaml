@@ -881,8 +881,8 @@ paths:
     post:
       tags:
         - Photo
-      summary: 사진 즐겨찾기 토글
-      description: '특정 사진의 즐겨찾기 상태를 반대로 변경합니다. 사진이 즐겨찾기에 등록되어 있으면 해제하고, 해제되어 있으면 등록합니다.'
+      summary: 사진 즐겨찾기 등록
+      description: 특정 사진의 즐겨찾기 상태를 true로 변경합니다. 이미 등록된 상태인 경우에는 유지됩니다.
       parameters:
         - in: path
           name: photo_id
@@ -892,7 +892,7 @@ paths:
           description: 즐겨찾기 상태를 변경할 사진의 ID
       responses:
         '200':
-          description: 즐겨찾기 상태가 성공적으로 업데이트되었습니다.
+          description: 즐겨찾기 상태가 성공적으로 등록되었습니다.
           content:
             application/json:
               schema:
@@ -904,7 +904,7 @@ paths:
                     example: 1
                   photo_like:
                     type: boolean
-                    description: 변경된 즐겨찾기 상태
+                    description: 즐겨찾기 상태 (항상 true)
                     example: true
         '404':
           description: 해당 ID의 사진이 존재하지 않는 경우
