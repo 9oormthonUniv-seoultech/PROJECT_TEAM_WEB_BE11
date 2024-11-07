@@ -2,6 +2,7 @@ const User = require('../models/user');
 const Photobooth = require('../models/photobooth');
 const Photo = require('../models/photo');
 const {Keyword, Keyword_list} = require('../models/keyword');
+const {Sequelize, Op, fn, col} = require('sequelize');
 
 // 부스 즐겨찾기 추가
 const addBoothLike = async (req, res) => {
@@ -85,12 +86,17 @@ const readBoothLike = async (req, res) => {
             return acc;
         }, {});
 
-        // 각 부스에 대한 최다 키워드 가져오기
+        // 각 부스에 대한 최다 키워드 가져오기 및 count가 1 이상인 키워드 개수 계산
         const topKeywords = await Keyword.findAll({
             where: {
                 photobooth_id: likedBoothIds
             },
-            attributes: ['photobooth_id', 'keyword_id', 'count'],
+            attributes: [
+                'photobooth_id', 
+                'keyword_id', 
+                'count',
+                [Sequelize.fn('COUNT', Sequelize.col('keyword_id')), 'keyword_count']
+            ],
             include: [
                 {
                     model: Keyword_list,
@@ -98,28 +104,38 @@ const readBoothLike = async (req, res) => {
                     attributes: ['keyword']
                 }
             ],
+            where: {
+                count: { [Op.gte]: 1 } // count가 1 이상인 것만 가져오기
+            },
             order: [[ 'count', 'DESC' ]],
-            group: ['photobooth_id']
+            group: ['photobooth_id', 'keyword_id']
         });
 
-        // 부스 ID별로 가장 많이 사용된 키워드 매핑
-        const topKeywordMap = topKeywords.reduce((acc, keyword) => {
-            acc[keyword.photobooth_id] = keyword.keyword.keyword; // 키워드 이름만 저장
+        // 부스 ID별로 가장 많이 사용된 키워드 및 count가 1 이상인 키워드 개수 매핑
+        const keywordDataMap = topKeywords.reduce((acc, keyword) => {
+            if (!acc[keyword.photobooth_id]) {
+                acc[keyword.photobooth_id] = {
+                    top_keyword: keyword.keyword.keyword,
+                    keyword_count: 0
+                };
+            }
+            acc[keyword.photobooth_id].keyword_count += 1;
             return acc;
         }, {});
 
+        // 응답 데이터 가공
         const response = user.likedBooths.map(booth => {
             const recentPhoto = recentPhotoMap[booth.id];
-            const topKeyword = topKeywordMap[booth.id] || null;
+            const keywordData = keywordDataMap[booth.id] || { top_keyword: null, keyword_count: 0 };
 
             return {
                 photobooth_id: booth.id,
                 photobooth_name: booth.name,
                 rating: booth.rating,
-                top_keyword: topKeyword,
+                top_keyword: keywordData.top_keyword,
+                keyword_count: keywordData.keyword_count,
                 user_like: true,
                 photobooth_image: recentPhoto ? {
-                    date: recentPhoto.date,
                     image_url: recentPhoto.image_url
                 } : null
             };
@@ -131,6 +147,7 @@ const readBoothLike = async (req, res) => {
         res.status(500).json({ message: '즐겨찾는 부스 조회 실패', error });
     }
 };
+
 
 
 
