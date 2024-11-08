@@ -13,7 +13,7 @@ router.get('/kakao/callback', passport.authenticate('kakao', {
     const query = "?accessToken=" + token;
     res.locals.token = token;
 
-    res.redirect(`http://localhost:3000/login${query}`); // 로그인 성공 시
+    res.redirect(`http://project-team-web-fe-1.vercel.app/login${query}`); // 로그인 성공 시
 });
 
 
